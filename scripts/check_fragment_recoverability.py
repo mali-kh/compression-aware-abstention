@@ -1,7 +1,7 @@
 """D5 — Fragment-recoverability sanity check.
 
 GATING: if a clean Qwen2.5-7B-Instruct can recover the gold answer from the
-decoded kept-tokens of an example we labelled ABSTAIN, our ABSTAIN labels
+decoded kept-tokens of an example we labeled ABSTAIN, our ABSTAIN labels
 are too aggressive and training on them will teach the model to abstain
 when it shouldn't.
 
@@ -221,7 +221,7 @@ def write_inspection_md(results: list[dict], rate: float, judge_model_id: str, r
     md.append(f"- fragment_recovery_rate: **{rate:.1%}** "
               f"({sum(1 for r in results if r['recovered'])}/{len(results)})")
     md.append("")
-    md.append("Each example below was labelled ABSTAIN by our pipeline. The decoded")
+    md.append("Each example below was labeled ABSTAIN by our pipeline. The decoded")
     md.append("fragment is the kept-token text — Swiss cheese, but representative of")
     md.append("what the post-compression KV cache contains semantically. If the judge")
     md.append("model can answer correctly from the fragment alone, our ABSTAIN label")

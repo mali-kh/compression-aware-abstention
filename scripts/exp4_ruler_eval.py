@@ -83,7 +83,7 @@ def classify_ruler_response(resp: str, gold: str) -> str:
     """Substring-match-or-abstain classifier matching the v1 honest_accuracy harness.
 
     For RULER all examples have a single ground-truth answer string. The
-    "right" behaviour depends on whether the answer survived compression:
+    "right" behavior depends on whether the answer survived compression:
     if it did, the model should emit the answer; if it didn't, the model
     should abstain. We return one of: correct, abstained, hallucinated.
     Whether each outcome is "good" depends on the gold-state, which the
@@ -267,7 +267,7 @@ def main() -> int:
           "- Eval prompt: `Context: {decoded kept tokens}\\n\\nQuestion: {q}\\n\\nAnswer:`",
           "- Substring-match classifier: `correct` if gold answer appears in response, "
           "`abstained` if response matches v1 abstention pattern, else `hallucinated`\n",
-          "## Per-(length, ratio) honest behaviour by gold-state\n",
+          "## Per-(length, ratio) honest behavior by gold-state\n",
           "Each cell shows adapter classifications, scoped to examples where the needle "
           "actually survived (gold_state=confident) or didn't (gold_state=abstain). "
           "DROP and `unknown` (needle-not-located) gold_states are excluded from the table; "

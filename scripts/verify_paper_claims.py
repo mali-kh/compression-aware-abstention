@@ -92,9 +92,9 @@ def wilson(k: int, n: int, z: float = 1.96):
         return 0.0, 0.0
     p = k / n
     d = 1 + z * z / n
-    centre = (p + z * z / (2 * n)) / d
+    center = (p + z * z / (2 * n)) / d
     half = z * sqrt(p * (1 - p) / n + z * z / (4 * n * n)) / d
-    return centre - half, centre + half
+    return center - half, center + half
 
 
 def paired(a_rows, b_rows, ratio=None, conf_only=False):

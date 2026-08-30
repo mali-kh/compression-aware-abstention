@@ -10,13 +10,13 @@ Design notes:
     The original supporting_spans in metadata are token indices into THIS
     tokenization, so they remain valid 1:1.
   * Prefill is run on context-only (no question concatenated). For SnapKV
-    this neutralises its query-aware advantage by construction — see the
+    this neutralizes its query-aware advantage by construction — see the
     cross-compressor memo addendum for the reasoning. To run SnapKV in
     its query-aware mode instead, prefill on context+question (one-line
     change in `_compose_prefill_text`).
   * Three sanity outputs printed at the end:
       (a) realized vs target retention rate per ratio (calibration check),
-      (b) label flip rate vs the original KVzip-labelled val_v1 (informativeness),
+      (b) label flip rate vs the original KVzip-labeled val_v1 (informativeness),
       (c) a single decoded fragment for one example (alignment eyeball).
 """
 
@@ -179,7 +179,7 @@ def main() -> int:
         mean = sum(vals) / len(vals)
         print(f"  ratio={ratio:.2f}  realized={mean:.4f}  Δ={(mean - ratio) * 100:+.2f}pp  (n={len(vals)})")
 
-    # sanity (b): label flips vs original KVzip-labelled val_v1
+    # sanity (b): label flips vs original KVzip-labeled val_v1
     print(f"\n=== sanity (b): label flips vs original KVzip val_v1 ===")
     print(f"  total flips: {len(label_flips)} / {len(out_rows)} = "
           f"{len(label_flips) / max(len(out_rows), 1):.1%}")

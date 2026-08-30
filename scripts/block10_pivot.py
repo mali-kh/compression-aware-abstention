@@ -39,10 +39,10 @@ def wilson_ci(k, n, z=1.96):
         return 0.0, 0.0, 0.0
     p = k / n
     denom = 1 + z * z / n
-    centre = p + z * z / (2 * n)
+    center = p + z * z / (2 * n)
     spread = z * math.sqrt(p * (1 - p) / n + z * z / (4 * n * n))
-    lo = (centre - spread) / denom
-    hi = (centre + spread) / denom
+    lo = (center - spread) / denom
+    hi = (center + spread) / denom
     return p, max(0.0, lo), min(1.0, hi)
 
 
@@ -120,7 +120,7 @@ def section_10b():
     print("## Section 10B: Adversarial tight-span eviction (CONFIDENT-gold, all ratios)\n")
     print("Mask = existing kept_mask MINUS tight-span tokens, refilled to original")
     print("retention with random non-kept positions (seed=42 + record id).\n")
-    print("Correct behaviour given the construction: model should ABSTAIN since the")
+    print("Correct behavior given the construction: model should ABSTAIN since the")
     print("answer-bearing tokens are gone.\n")
     print("```")
     hdr = (f"{'adapter':<12s} | {'cond':<10s} | {'n_C':>4s} | {'abst rate (CI)':<24s} | "
@@ -179,7 +179,7 @@ def section_10b():
 def section_10c():
     print("## Section 10C: Anti-priority paired (r=0.50 CONFIDENT-gold)\n")
     print("Mask A: existing kept_mask (KVzip top-50%); Mask B: bit-flipped (KVzip bottom-50%).")
-    print("Same length, same example, opposite KVzip-rank prioritisation.\n")
+    print("Same length, same example, opposite KVzip-rank prioritization.\n")
     print("Discrimination: correct on A AND (abstained-or-non-correct) on B.\n")
     print("```")
     hdr = (f"{'adapter':<12s} | {'n':>3s} | {'A correct':>9s} | {'B correct':>9s} | "

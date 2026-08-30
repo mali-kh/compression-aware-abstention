@@ -45,7 +45,7 @@ def _seed_everything(seed: int) -> None:
     Called at the top of main() and before each non-deterministic operation
     (LoRA initialization in get_peft_model, DataLoader shuffle in
     train_epoch). Re-seeding before each point — rather than once at
-    process start — guarantees deterministic behaviour even if intermediate
+    process start — guarantees deterministic behavior even if intermediate
     operations advance the global RNG state in unpredictable ways
     (e.g. torch.cuda allocator activity, third-party library RNG use).
     """
@@ -469,7 +469,7 @@ def main() -> int:
     print(f"\n=== PHASE 4: D5 wrong-but-specific qualitative comparison ===", flush=True)
     d5_records = load_jsonl(Path(args.d5_jsonl))
     # The D5 judge was Qwen2.5-7B-Instruct (the same model we just adapted).
-    # All 30 D5 examples were ABSTAIN-labelled and the judge produced 0 correct.
+    # All 30 D5 examples were ABSTAIN-labeled and the judge produced 0 correct.
     # The wrong-but-specific subset is responses that CHASED a wrong answer
     # rather than honestly hedging.
     d5_picks = []
@@ -517,7 +517,7 @@ def main() -> int:
 
     qual_md = ROOT / "artifacts" / f"v1_d5_qualitative{out_suffix}.md"
     md = ["# v1 — qualitative comparison on D5 wrong-but-specific examples\n",
-          "_Each example was labelled ABSTAIN by our pipeline. The D5 judge "
+          "_Each example was labeled ABSTAIN by our pipeline. The D5 judge "
           "(clean Qwen2.5-7B-Instruct) confidently emitted a wrong specific "
           "answer instead of abstaining. Below: the same input given to base "
           "Qwen2.5-7B-Instruct (re-confirmed) and to the v1-adapted model._\n",

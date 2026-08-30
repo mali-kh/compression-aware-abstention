@@ -49,7 +49,7 @@ Test has **zero CONF-gold rows at ratios 0.05 / 0.10 / 0.20 / 0.30**, very small
 | selection | 363 | 0.33 / 0.55 | 0.83 / 0.09 | +0.50 | (subset of the 7) |
 | **test_held_out** | 100 | 0.28 / 0.65 | **0.91 / 0.04** | **+0.63** | **1 of 85 ABST-gold** |
 
-**Headline replicates strongly.** Aggregate Δhon on test_held_out is +0.63 — actually a bit *higher* than the v1_full +0.53 number, driven by the abstain-skew in the test split (more abstain-gold rows = more cases where the adapter's near-perfect abstention behaviour wins big). Hallucination count drops to **1 out of 85 ABSTAIN-gold rows** (vs base 59 of 85). Class-count delta on test:
+**Headline replicates strongly.** Aggregate Δhon on test_held_out is +0.63 — actually a bit *higher* than the v1_full +0.53 number, driven by the abstain-skew in the test split (more abstain-gold rows = more cases where the adapter's near-perfect abstention behavior wins big). Hallucination count drops to **1 out of 85 ABSTAIN-gold rows** (vs base 59 of 85). Class-count delta on test:
 
 | class | base | adapter | Δ |
 |---|---|---|---|

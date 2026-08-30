@@ -10,7 +10,7 @@ Three independent training runs with seeds {42, 43, 44}. Identical setup otherwi
 | 43 | 2e-4 | 1 | 0.2234 |
 | **44** | **5e-5** | **2** | 0.2192 |
 
-Seed 44 picks a different LR and a different best-epoch from seeds 42 and 43. All three converge to val_loss ≈ 0.22 nonetheless, and to essentially the same per-ratio adapter behaviour (table below). The variance lives in the *trajectory*, not the *destination*.
+Seed 44 picks a different LR and a different best-epoch from seeds 42 and 43. All three converge to val_loss ≈ 0.22 nonetheless, and to essentially the same per-ratio adapter behavior (table below). The variance lives in the *trajectory*, not the *destination*.
 
 ## Per-ratio honest_accuracy / hallucination_rate
 
@@ -56,6 +56,6 @@ Hallucinated count lands at exactly 7 on all three seeds.
 
 Inline robustness paragraph in the methods section:
 
-> Three independent training runs (seeds {42, 43, 44}, identical setup otherwise) confirm that the headline result is not seed-specific. Per-ratio honest accuracy spread across seeds is ≤ 4pp at every meaningful slice (max 10pp at ratio=0.20, where every seed still scores at least 0.87 vs base 0.30). The aggregate hallucination count drops to exactly 7 on all three seeds (from base 232). The sweep-picked learning rate varies across seeds (2e-4 on seeds 42 and 43, 5e-5 on seed 44) but the resulting per-ratio adapter behaviour is essentially identical, indicating that 1-epoch sweep validation loss is too noisy to reliably select an LR while the resulting model converges to similar per-ratio metrics regardless.
+> Three independent training runs (seeds {42, 43, 44}, identical setup otherwise) confirm that the headline result is not seed-specific. Per-ratio honest accuracy spread across seeds is ≤ 4pp at every meaningful slice (max 10pp at ratio=0.20, where every seed still scores at least 0.87 vs base 0.30). The aggregate hallucination count drops to exactly 7 on all three seeds (from base 232). The sweep-picked learning rate varies across seeds (2e-4 on seeds 42 and 43, 5e-5 on seed 44) but the resulting per-ratio adapter behavior is essentially identical, indicating that 1-epoch sweep validation loss is too noisy to reliably select an LR while the resulting model converges to similar per-ratio metrics regardless.
 
 The sweep-picked-LR variance is itself worth flagging — see also `02_facts_check.md`. v2 should either widen the sweep (more epochs per LR before deciding) or skip the sweep entirely and pick a fixed LR.

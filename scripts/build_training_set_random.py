@@ -282,7 +282,7 @@ def main() -> int:
           flush=True)
 
     cfg = LabelConfig()
-    print(f"[run] labelling train pool with random masks at {len(ratios)} ratios...", flush=True)
+    print(f"[run] labeling train pool with random masks at {len(ratios)} ratios...", flush=True)
     t0 = time.time()
     train_rows: list[dict] = []
     # example_index runs 0..n_train-1 over train_pool then n_train..n_train+n_val-1 over val_pool.
@@ -297,7 +297,7 @@ def main() -> int:
             print(f"  [{i+1:4d}/{len(train_pool)}]  {elapsed:.1f}s  ({rate:.1f} ex/s)",
                   flush=True)
 
-    print(f"\n[run] labelling val pool ({len(val_pool)} examples)...", flush=True)
+    print(f"\n[run] labeling val pool ({len(val_pool)} examples)...", flush=True)
     val_rows: list[dict] = []
     for j, ex in enumerate(val_pool):
         global_idx = len(train_pool) + j
@@ -306,7 +306,7 @@ def main() -> int:
         )
 
     elapsed = time.time() - t0
-    print(f"[run] done labelling in {elapsed:.1f}s "
+    print(f"[run] done labeling in {elapsed:.1f}s "
           f"({len(train_rows)+len(val_rows)} raw instances)", flush=True)
 
     # per-ratio breakdown BEFORE filtering DROP — reportable

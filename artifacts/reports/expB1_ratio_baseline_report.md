@@ -64,7 +64,7 @@ The ratio=0.50 cell is the load-bearing one for the cache-state claim — it's t
 The pre-registered success threshold was "v1 beats best-τ at ratio=0.50 by ≥ 10pp."
 
 - **v1 passes** on KVzip (+10pp ✓) and ExpAttn (+12pp ✓).
-- **v1 fails** on SnapKV (−8pp) — consistent with the v1 §10 finding that v1's recognise-broken-cache behaviour didn't transfer cross-family.
+- **v1 fails** on SnapKV (−8pp) — consistent with the v1 §10 finding that v1's recognize-broken-cache behavior didn't transfer cross-family.
 - **v1 fails dramatically on SnapKV-native (−35pp)** — but the slice has degenerate gold mix (76% CONF), so always_answer scores 0.757 trivially. This isn't really a fair comparison: any model that abstains *at all* on the slice will lose to always_answer.
 
 - **Mixture passes** on KVzip (+15pp), ExpAttn (+17pp), SnapKV (+10pp).
@@ -74,7 +74,7 @@ The pre-registered success threshold was "v1 beats best-τ at ratio=0.50 by ≥ 
 
 ### The cache-state-introspection claim
 
-The headline test at ratio=0.50 is the right one for the claim. At extreme ratios, the claim is unfalsifiable — every method correctly abstains or answers because gold is one-class. Only at the balanced slice can per-example cache-state-conditional behaviour distinguish a real model from a threshold heuristic.
+The headline test at ratio=0.50 is the right one for the claim. At extreme ratios, the claim is unfalsifiable — every method correctly abstains or answers because gold is one-class. Only at the balanced slice can per-example cache-state-conditional behavior distinguish a real model from a threshold heuristic.
 
 For v1: claim survives on the training compressor (KVzip, +10pp) and within-family transfer (ExpAttn, +12pp). It does not survive on cross-family transfer (SnapKV, −8pp), but that's consistent with v1's documented weakness on cross-family transfer (§10) and is exactly what the mixture training was designed to fix. The SnapKV-native cell has a degenerate gold mix and is not interpretable in this comparison.
 

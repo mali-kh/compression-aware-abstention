@@ -1,6 +1,6 @@
 # Exp 2 — Compressor-mixture training (seed 42)
 
-_Tests the central v2 hypothesis from the v1 memo §10.7 / §10.8: training on a mixture of compressor cache states broadens the recognize-broken-cache behaviour and closes the SnapKV gap. v1 was trained on KVzip-evicted caches only; this experiment trains on a 30/70-balanced mixture of KVzip + Expected Attention + SnapKV (context-only) at the same ratios._
+_Tests the central v2 hypothesis from the v1 memo §10.7 / §10.8: training on a mixture of compressor cache states broadens the recognize-broken-cache behavior and closes the SnapKV gap. v1 was trained on KVzip-evicted caches only; this experiment trains on a 30/70-balanced mixture of KVzip + Expected Attention + SnapKV (context-only) at the same ratios._
 
 ## Setup
 
@@ -101,23 +101,23 @@ Spec hypothesis: "the mixture's effect is concentrated at mid-high ratios". The 
 | SnapKV (ctx) | **+0.40** | **+0.20** |
 | SnapKV (native) | **+0.31** | +0.09 |
 
-For SnapKV (the cross-family case where v1 had the biggest gap), the mixture's per-ratio gain is **2× larger at low ratios** than mid-high. Mechanism: at low ratios the kept-mask overlap between KVzip and SnapKV is smallest (Jaccard 0.03 / 0.07 / 0.16 at 0.05 / 0.10 / 0.20 from the v1 §10.4 analysis), so v1 — trained only on KVzip — failed hardest at recognising SnapKV's eviction signature there. Mixture training adds SnapKV examples at those ratios (kept at natural distribution per Option B), and the model learns to recognise them.
+For SnapKV (the cross-family case where v1 had the biggest gap), the mixture's per-ratio gain is **2× larger at low ratios** than mid-high. Mechanism: at low ratios the kept-mask overlap between KVzip and SnapKV is smallest (Jaccard 0.03 / 0.07 / 0.16 at 0.05 / 0.10 / 0.20 from the v1 §10.4 analysis), so v1 — trained only on KVzip — failed hardest at recognizing SnapKV's eviction signature there. Mixture training adds SnapKV examples at those ratios (kept at natural distribution per Option B), and the model learns to recognize them.
 
 This is a *finding*, not a confirmation: the mixture works exactly where v1 had the worst signature mismatch, and the magnitude tracks the inverse of the kept-mask overlap.
 
 ### Rescue analysis
 
-The v1 §10.5 finding identified **89 examples** that the v1 adapter correctly abstained on under KVzip but hallucinated on under SnapKV-context-only — concentrated at low and mid ratios where the kept-mask overlap was smallest. This was the central evidence for "v1's recognise-broken-cache behaviour transfers within compressor family but not across."
+The v1 §10.5 finding identified **89 examples** that the v1 adapter correctly abstained on under KVzip but hallucinated on under SnapKV-context-only — concentrated at low and mid ratios where the kept-mask overlap was smallest. This was the central evidence for "v1's recognize-broken-cache behavior transfers within compressor family but not across."
 
-Of those same 89 examples, the **mixture adapter correctly abstains on 82 (92%)** under SnapKV. The recognition behaviour now transfers across compressors.
+Of those same 89 examples, the **mixture adapter correctly abstains on 82 (92%)** under SnapKV. The recognition behavior now transfers across compressors.
 
 A broader version: the v1 adapter correctly abstained on 337 ABSTAIN-gold instances under KVzip. Of those:
 - v1 SnapKV adapter also correctly abstained: 182 / 337 = 54%
 - **Mixture SnapKV adapter correctly abstains: 292 / 337 = 87%**
 
-The mixture's recognise-broken-cache behaviour is much more compressor-agnostic. The "two behaviours, two transfer patterns" decomposition from v1 §10.7 (read-the-cache transfers cleanly across compressors; recognise-broken-cache only within-family) needs to be revised: with mixture training, both behaviours transfer.
+The mixture's recognize-broken-cache behavior is much more compressor-agnostic. The "two behaviors, two transfer patterns" decomposition from v1 §10.7 (read-the-cache transfers cleanly across compressors; recognize-broken-cache only within-family) needs to be revised: with mixture training, both behaviors transfer.
 
-## What v1 KVzip behaviour was preserved
+## What v1 KVzip behavior was preserved
 
 A real concern with mixture training is that adding compressor diversity could degrade KVzip performance. It did not:
 
@@ -139,20 +139,20 @@ KVzip is preserved or slightly improved at every ratio. No tradeoff.
 This is the v2 hypothesis confirmed in the cleanest possible way. With Option B's data (mixture of three compressors, low-ratio strata kept at natural distribution, mid-high strata at 30/70), the mixture-trained adapter:
 
 1. **Closes the SnapKV gap entirely** — aggregate Δhon goes from +0.21 → +0.53 on SnapKV-ctx; +0.20 → +0.43 on SnapKV-native.
-2. **Preserves KVzip behaviour** — no degradation; in fact slight improvement.
+2. **Preserves KVzip behavior** — no degradation; in fact slight improvement.
 3. **Improves ExpAttn modestly** — +0.49 → +0.57 aggregate.
 4. **Rescues 92% of the 89 specific examples** that demonstrated v1's cross-compressor failure mode in §10.5.
 
-The v1 §10.7 framing — "the adapter has learned two behaviours that transfer differently" — needs to be retired. With mixture training, both behaviours (read-the-cache, recognise-broken-cache) transfer across all three trained compressors.
+The v1 §10.7 framing — "the adapter has learned two behaviors that transfer differently" — needs to be retired. With mixture training, both behaviors (read-the-cache, recognize-broken-cache) transfer across all three trained compressors.
 
-The mixture's effect on SnapKV is concentrated at low ratios where the kept-mask overlap with KVzip was smallest. This is an interpretable, mechanistic finding: the model learns to recognise eviction signatures it was trained on; KVzip-only training generalised within-family because Expected Attention's eviction signature happens to be similar to KVzip's, but didn't generalise to SnapKV's structurally different signature; mixture training fixes that by direct exposure.
+The mixture's effect on SnapKV is concentrated at low ratios where the kept-mask overlap with KVzip was smallest. This is an interpretable, mechanistic finding: the model learns to recognize eviction signatures it was trained on; KVzip-only training generalized within-family because Expected Attention's eviction signature happens to be similar to KVzip's, but didn't generalize to SnapKV's structurally different signature; mixture training fixes that by direct exposure.
 
 ## What this experiment does not show
 
 - **Single seed (42).** Per spec, seed 43 is a conditional follow-up if the seed-42 result was meaningful. The SnapKV aggregate Δhon shifted by +32pp (ctx-only) and +23pp (native), well above the spec's 5pp threshold for "meaningful" → seed 43 is now warranted, but per spec it was not run in this round.
 - **Llama replication of the mixture result.** Exp 3 confirmed v1 is not Qwen-specific; we have not yet confirmed that the mixture-training effect also replicates on Llama.
 - **High-fill counter-instance enrichment.** The §5 v1-memo finding (gross-fill-proxy heuristic) was not directly addressed; the dataset is balanced per-(compressor, ratio) but does not enrich the rare high-fill ABSTAIN-gold cells.
-- **Conditional answer quality at the cells where mixture made big gains.** The aggregate result includes both abstention and answer behaviour; for the headline-defending paper-style claim, the conditional-wrong-rate analysis from v1 §4 should also be done on the mixture (separate small computation; not in this report).
+- **Conditional answer quality at the cells where mixture made big gains.** The aggregate result includes both abstention and answer behavior; for the headline-defending paper-style claim, the conditional-wrong-rate analysis from v1 §4 should also be done on the mixture (separate small computation; not in this report).
 
 ## Files
 

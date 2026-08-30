@@ -59,7 +59,7 @@ Best LR = 5e-5 (Qwen seeds 42 and 43 picked 2e-4; Qwen seed 44 also picked 5e-5)
 | 0.50 | 0.58 | 0.20 |
 | 0.80 | 0.03 | 0.05 |
 
-**Both monotone decreasing.** Llama and Qwen both learn cache-state-conditional abstention behaviour. The qualitative *shape* is preserved.
+**Both monotone decreasing.** Llama and Qwen both learn cache-state-conditional abstention behavior. The qualitative *shape* is preserved.
 
 The notable difference is at ratio=0.50: Llama abstains far less (0.20 vs Qwen's 0.58). This shifts the decision boundary toward "answer" earlier than Qwen does. Combined with Llama's gold-mix at 0.50 being CONF-heavy (35 CONF / 15 ABST vs Qwen's 22/26), Llama at this slice is in a different regime — most examples are CONF-gold and the model correctly chooses to answer most of them. The Δhon at 0.50 ends up identical (+0.20 vs +0.21).
 
@@ -83,7 +83,7 @@ Llama's adapter actually produces *more* correct answers in absolute terms.
 
 ## Reading
 
-The v1 result is not Qwen-specific. The cache-state-conditional behavior — monotonic abstention curve, ~97% hallucination drop on val, large positive Δhon at every ratio — replicates cleanly on Llama-3.1-8B-Instruct with the same training pipeline. Llama's abstention boundary sits at a slightly different place than Qwen's (sharper transition between "always abstain" and "always answer" at ratio 0.50), but the underlying behaviour is the same.
+The v1 result is not Qwen-specific. The cache-state-conditional behavior — monotonic abstention curve, ~97% hallucination drop on val, large positive Δhon at every ratio — replicates cleanly on Llama-3.1-8B-Instruct with the same training pipeline. Llama's abstention boundary sits at a slightly different place than Qwen's (sharper transition between "always abstain" and "always answer" at ratio 0.50), but the underlying behavior is the same.
 
 The result is robust to (a) base model family (Qwen → Llama), (b) base model size (7B → 8B), (c) tokenizer (Qwen 151k → Llama 128k vocab). Three of the four "single-X" limitations the v1 memo listed are now partially addressed: single-base-model is no longer load-bearing.
 

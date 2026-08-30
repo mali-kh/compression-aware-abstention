@@ -1,6 +1,6 @@
 # v1 — qualitative comparison on D5 wrong-but-specific examples
 
-_Each example was labelled ABSTAIN by our pipeline. The D5 judge (clean Qwen2.5-7B-Instruct) confidently emitted a wrong specific answer instead of abstaining. Below: the same input given to base Qwen2.5-7B-Instruct (re-confirmed) and to the v1-adapted model._
+_Each example was labeled ABSTAIN by our pipeline. The D5 judge (clean Qwen2.5-7B-Instruct) confidently emitted a wrong specific answer instead of abstaining. Below: the same input given to base Qwen2.5-7B-Instruct (re-confirmed) and to the v1-adapted model._
 
 _n=10 examples_
 

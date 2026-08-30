@@ -57,13 +57,13 @@ For each of those 89 keys, on the **KVzip val row** (the side v1 adapter got rig
 
 Fragment-prompt only catches **13 of the 89** abstention cases v1 catches. **The surviving text alone does NOT carry the abstention signal** — the LoRA training is doing the work. The base model, given identical input, hallucinates on 80% of these examples; the adapter abstains correctly on 100%.
 
-This is the cleanest single piece of evidence in the project that the LoRA fine-tuning is producing behaviour the base model does not exhibit on the same input. For the paper: the cache-state-conditional behaviour is **a learned property of the trained model**, not an emergent property of presenting the model with a truncated context.
+This is the cleanest single piece of evidence in the project that the LoRA fine-tuning is producing behavior the base model does not exhibit on the same input. For the paper: the cache-state-conditional behavior is **a learned property of the trained model**, not an emergent property of presenting the model with a truncated context.
 
 ## Reading
 
-The B3 success criterion was: v1 / mixture beat fragment-prompt by ≥10pp at ratio=0.50. **Both pass cleanly** (+21pp v1, +25pp mix). The §10.5 sub-analysis goes further: it shows that on the precise examples that motivated v1's cross-compressor finding, fragment-prompt cannot recover the adapter's behaviour from the same input.
+The B3 success criterion was: v1 / mixture beat fragment-prompt by ≥10pp at ratio=0.50. **Both pass cleanly** (+21pp v1, +25pp mix). The §10.5 sub-analysis goes further: it shows that on the precise examples that motivated v1's cross-compressor finding, fragment-prompt cannot recover the adapter's behavior from the same input.
 
-The relationship is one-directional: the cache representation does **not** carry signal beyond the surviving text in the architectural sense (we don't generate from a compressed cache). Rather, the surviving-text input alone is **insufficient** for the abstention decision; the LoRA training is what enables a model to recognise broken-cache fragments and respond appropriately. Fragment-prompt has access to identical information and does not learn to use it.
+The relationship is one-directional: the cache representation does **not** carry signal beyond the surviving text in the architectural sense (we don't generate from a compressed cache). Rather, the surviving-text input alone is **insufficient** for the abstention decision; the LoRA training is what enables a model to recognize broken-cache fragments and respond appropriately. Fragment-prompt has access to identical information and does not learn to use it.
 
 ## Implications for B2
 

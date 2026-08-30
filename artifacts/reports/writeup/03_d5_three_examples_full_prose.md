@@ -1,6 +1,6 @@
 # 03 — Three D5 wrong-but-specific examples (full prose, paper-ready)
 
-Three examples recommended for Figure 1 of the paper. Each shows: a question that the model could not answer from the post-compression fragment, the original D5 judge's confident-but-wrong response (re-confirmed on the final machine), and the v1-adapted model's calibrated abstention. All three were labelled ABSTAIN by our pipeline (the supporting tokens were evicted at compression ratio = 0.30).
+Three examples recommended for Figure 1 of the paper. Each shows: a question that the model could not answer from the post-compression fragment, the original D5 judge's confident-but-wrong response (re-confirmed on the final machine), and the v1-adapted model's calibrated abstention. All three were labeled ABSTAIN by our pipeline (the supporting tokens were evicted at compression ratio = 0.30).
 
 The base model's responses were truncated at `max_new_tokens=64` and the relevant first sentence is shown verbatim below; trailing text is the model continuing into a justification or restatement and is omitted for figure clarity. Source: `artifacts/v1_d5_qualitative.md` (full ten-example version) and `artifacts/v1_d5_cross_compressor.md` (cross-compressor version).
 

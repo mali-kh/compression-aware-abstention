@@ -42,9 +42,9 @@ The 88% and 0% rows have small denominators (n=8 and n=1 respectively); the head
 
 ## Reading for the paper
 
-This is the central evidence for the §10.7 decomposition (memo): the adapter has learned *two* behaviours and they transfer differently:
+This is the central evidence for the §10.7 decomposition (memo): the adapter has learned *two* behaviors and they transfer differently:
 
 1. **Read the cache and answer if the answer is there** — transfers cleanly across compressors. Evidence: D5 cross-compressor table (ExpAttn answers Orleans/Emilia correctly, SnapKV-native answers Orleans/Emilia/conga correctly).
 2. **Recognize that the cache is broken and abstain** — transfers within compressor family but not across. Evidence: the subset finding above. SnapKV does not enable abstain-recognition on examples KVzip didn't enable; it only causes failure-to-recognize on examples KVzip did enable.
 
-The 89 figure is the cleanest single statistic for "how much of KVzip's recognition behaviour fails to generalize to SnapKV."
+The 89 figure is the cleanest single statistic for "how much of KVzip's recognition behavior fails to generalize to SnapKV."

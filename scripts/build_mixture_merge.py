@@ -141,7 +141,7 @@ def main() -> int:
     ap.add_argument("--seed", type=int, default=42)
     ap.add_argument("--low-ratio-skip-floor", type=float, default=0.0,
                     help="Skip per-stratum 30/70 balance for strata with ratio < this. "
-                         "Default 0.0 = balance all strata (legacy behaviour). "
+                         "Default 0.0 = balance all strata (legacy behavior). "
                          "Set to 0.20 to apply Exp 2 Option B (skip 0.05 + 0.10).")
     ap.add_argument("--train-holdout-frac", type=float, default=0.0,
                     help="If > 0, split the balanced train into (1-frac) train + frac holdout, "

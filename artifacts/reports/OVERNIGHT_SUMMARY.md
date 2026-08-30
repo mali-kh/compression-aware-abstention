@@ -22,7 +22,7 @@ _One-page index for your morning review. Read this first; then dive into the lin
 
 1. `exp1_test_split_report.md` — does the headline replicate on truly held-out data? Yes.
 2. `exp3_llama_replication_report.md` — is the result Qwen-specific? No — Llama replicates cleanly.
-3. `exp4_ruler_long_context_report.md` — does the method generalise to long context retrieval? Yes at 16K, monotone abstention curve preserved.
+3. `exp4_ruler_long_context_report.md` — does the method generalize to long context retrieval? Yes at 16K, monotone abstention curve preserved.
 4. `EXP2A_BLOCKED.md` — the blocker for the v2-defining experiment. Surface for your decision.
 
 ## Infrastructure issues encountered (and fixed)
@@ -48,7 +48,7 @@ The two run_v1_full.py extensions earlier today (`--seed`/`--skip-base-eval` in 
 Scripts (all committed):
 - `scripts/exp1_test_split.py` — id-grouped val split
 - `scripts/build_mixture_kvzip.py` — KVzip phase of mixture build
-- `scripts/build_mixture_kvpress.py` — kvpress phase (parameterised by `--press`)
+- `scripts/build_mixture_kvpress.py` — kvpress phase (parameterized by `--press`)
 - `scripts/build_mixture_merge.py` — per-stratum balance + report
 - `scripts/exp4_ruler_eval.py` — RULER NIAH eval
 

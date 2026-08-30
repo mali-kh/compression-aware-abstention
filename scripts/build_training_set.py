@@ -5,12 +5,12 @@ Pipeline:
      that fit the token budget and have all sub-answers verbatim-locatable
      (tight spans, no fallback).
   2. Disjoint by example id: first N_train go into the train pool, the
-     next N_val into the val pool. Same labelling treatment for both.
+     next N_val into the val pool. Same labeling treatment for both.
   3. For each example: prefill+score once on the configured KVzip model,
      prune at each ratio in {0.05, 0.10, 0.20, 0.30, 0.50, 0.80},
      reduce kept_mask via topk to match the labeler's calibration, run
      label_example with the binary labeler (FLAGGED_PARTIAL off).
-  4. Drop instances labelled DROP. Keep CONFIDENT and ABSTAIN.
+  4. Drop instances labeled DROP. Keep CONFIDENT and ABSTAIN.
   5. Class-balance the TRAIN set only by undersampling the majority
      class (the user's "ratio reweighting" — we keep all minority and
      drop a random subset of majority; no oversampling/duplication).
@@ -304,7 +304,7 @@ def main() -> int:
     )
 
     cfg = LabelConfig()  # binary labeler, FP off
-    print(f"[run] labelling train pool at {len(ratios)} ratios...", flush=True)
+    print(f"[run] labeling train pool at {len(ratios)} ratios...", flush=True)
     t0 = time.time()
     train_rows: list[dict] = []
     for i, ex in enumerate(train_pool):
@@ -320,7 +320,7 @@ def main() -> int:
                 flush=True,
             )
 
-    print(f"\n[run] labelling val pool ({len(val_pool)} examples)...", flush=True)
+    print(f"\n[run] labeling val pool ({len(val_pool)} examples)...", flush=True)
     val_rows: list[dict] = []
     for ex in val_pool:
         val_rows.extend(
@@ -328,7 +328,7 @@ def main() -> int:
         )
 
     elapsed = time.time() - t0
-    print(f"[run] done labelling in {elapsed:.1f}s "
+    print(f"[run] done labeling in {elapsed:.1f}s "
           f"({len(train_rows)+len(val_rows)} raw instances)", flush=True)
 
     # Filter DROP

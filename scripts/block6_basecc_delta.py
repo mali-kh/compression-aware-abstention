@@ -32,10 +32,10 @@ def wilson_ci(k, n, z=1.96):
         return 0.0, 0.0, 0.0
     p = k / n
     denom = 1 + z * z / n
-    centre = p + z * z / (2 * n)
+    center = p + z * z / (2 * n)
     spread = z * math.sqrt(p * (1 - p) / n + z * z / (4 * n * n))
-    lo = (centre - spread) / denom
-    hi = (centre + spread) / denom
+    lo = (center - spread) / denom
+    hi = (center + spread) / denom
     return p, max(0.0, lo), min(1.0, hi)
 
 

@@ -8,13 +8,13 @@ _Audience: future-self plus an unfamiliar co-author who will read this in three 
 
 ## 1. Thesis
 
-LLMs under aggressive KV cache compression hallucinate when the compressor evicts the supporting tokens for an answer. Existing training-aware compression methods (KV-Distill, LoMA, DuoAttention) optimize the *opposite* of honesty: they teach the model to keep answering through compression as if nothing were lost. We invert that framing. We fine-tune the model (LoRA) to abstain calibrated to its **actual cached state** — what tokens survived eviction in this specific example — not to the gross compression intensity. The load-bearing claim of v1 is that cache-state-conditional behaviour is learnable at all. This memo documents that it is.
+LLMs under aggressive KV cache compression hallucinate when the compressor evicts the supporting tokens for an answer. Existing training-aware compression methods (KV-Distill, LoMA, DuoAttention) optimize the *opposite* of honesty: they teach the model to keep answering through compression as if nothing were lost. We invert that framing. We fine-tune the model (LoRA) to abstain calibrated to its **actual cached state** — what tokens survived eviction in this specific example — not to the gross compression intensity. The load-bearing claim of v1 is that cache-state-conditional behavior is learnable at all. This memo documents that it is.
 
 ## 2. Method
 
 **Data.** Musique 2-hop QA. For each example we render the multi-paragraph context, run KVzip prefill + per-(layer, head, token) importance scoring + prune at six retention ratios {0.05, 0.10, 0.20, 0.30, 0.50, 0.80}, and reduce the per-slot retention scores to a per-token boolean `kept_mask` via top-k calibrated so `mask.mean() ≈ ratio`.
 
-**Tight-span localisation (the pivot).** This was the methodological move that made the project tractable. Initially we used paragraph-level supporting spans (~100 tokens). At those scales, per-token retention averages out and the cache-state signal vanishes — the ratio-sweep diagnostic showed label entropy 0.000 at ratio=0.50 (every example landed on the same label). Switching to tight spans — the literal sub-answer string from `question_decomposition[i].answer` located verbatim inside its supporting paragraph (3–15 tokens, 100/100 located on the validation 50) — raised entropy to 0.95 at ratio=0.50. Per-example variance became visible. Without this pivot the cache-state-conditional thesis would have been undefendable on this dataset.
+**Tight-span localization (the pivot).** This was the methodological move that made the project tractable. Initially we used paragraph-level supporting spans (~100 tokens). At those scales, per-token retention averages out and the cache-state signal vanishes — the ratio-sweep diagnostic showed label entropy 0.000 at ratio=0.50 (every example landed on the same label). Switching to tight spans — the literal sub-answer string from `question_decomposition[i].answer` located verbatim inside its supporting paragraph (3–15 tokens, 100/100 located on the validation 50) — raised entropy to 0.95 at ratio=0.50. Per-example variance became visible. Without this pivot the cache-state-conditional thesis would have been undefendable on this dataset.
 
 **Labels.** Per supporting span, compute the retained-token fraction. CONFIDENT if all spans ≥ τ_high=0.8; ABSTAIN if any span < τ_low=0.3; DROP otherwise (excluded from training). Binary only for v1: FLAGGED_PARTIAL is deferred (the schema preserves the code path, but the v1 dataset contains no FLAGGED_PARTIAL instances — confirmed empirically).
 
@@ -26,7 +26,7 @@ LLMs under aggressive KV cache compression hallucinate when the compressor evict
 
 ## 3. Headline result
 
-Best adapter selected at epoch 1 of 3 (val_loss = 0.2165; epochs 2 and 3 overfit monotonically: val 0.2523 and 0.2674 with train losses dropping to 0.05 and 0.018). Best LR was 2e-4 with sweep val_loss=0.2263, marginally ahead of 1e-4 at 0.2281 — essentially a tie at sweep granularity, the script chose by the authorised criterion.
+Best adapter selected at epoch 1 of 3 (val_loss = 0.2165; epochs 2 and 3 overfit monotonically: val 0.2523 and 0.2674 with train losses dropping to 0.05 and 0.018). Best LR was 2e-4 with sweep val_loss=0.2263, marginally ahead of 1e-4 at 0.2281 — essentially a tie at sweep granularity, the script chose by the authorized criterion.
 
 Per-ratio honest_accuracy (`(correct_confident + correct_abstentions) / total`) on val_v1 (n=463):
 
@@ -39,13 +39,13 @@ Per-ratio honest_accuracy (`(correct_confident + correct_abstentions) / total`) 
 | **0.50** |  **48** | **22 / 26** | **0.44** | **0.65** | **+0.21** | **0.31** | **0.58** |
 | 0.80 |  73 | 69 /  4 | 0.51 | 0.60 | +0.10 | 0.18 | 0.03 |
 
-Aggregate (footnote, not headline): base 0.32 → adapter 0.84. The aggregate is sensitive to the ratio-sampling distribution — instances are produced uniformly across six ratios at dataset construction time, so a different sampling distribution would shift the aggregate without any change in the underlying behaviour. The per-ratio breakdown is therefore the meaningful quantity; the aggregate is included only for orientation.
+Aggregate (footnote, not headline): base 0.32 → adapter 0.84. The aggregate is sensitive to the ratio-sampling distribution — instances are produced uniformly across six ratios at dataset construction time, so a different sampling distribution would shift the aggregate without any change in the underlying behavior. The per-ratio breakdown is therefore the meaningful quantity; the aggregate is included only for orientation.
 
 Two findings sit on top of this table.
 
 **(a) Calibration in the right direction.** Adapter abstention rate decreases monotonically as retention ratio rises: 1.00 → 1.00 → 0.89 → 0.83 → 0.58 → 0.03. The model is conditioning its abstain/answer decision on cache state, not on a fixed prior. This is the load-bearing thesis claim and the figure that should anchor the paper.
 
-**(b) Class-count delta on val (adapter − base).** correct +244, hallucinated −225 (232 → 7, ~97% reduction), wrong_answer −4, overcautious −3, lucky_guess −12. The honest-accuracy gain comes from real abstention behaviour, not from luckier guessing.
+**(b) Class-count delta on val (adapter − base).** correct +244, hallucinated −225 (232 → 7, ~97% reduction), wrong_answer −4, overcautious −3, lucky_guess −12. The honest-accuracy gain comes from real abstention behavior, not from luckier guessing.
 
 **Per-ratio framing matters.** Per the project's standing rule, aggregate is a footnote. The headline slice is **ratio=0.50** (n=48, 22 CONFIDENT / 26 ABSTAIN — the most-mixed compression regime), where the same compression intensity produces qualitatively different cache-state outcomes per example. +0.21 there is the calibration-net result that survives the obvious "you traded helpfulness for safety" attack — see §4.
 
@@ -89,25 +89,25 @@ This is a clean, mechanistic, falsifiable claim about what the model learned, an
 
 These are the load-bearing decisions, not the headline number:
 
-- **Tight-span localisation** is what makes the cache-state signal visible at all. Without it, paragraph-level retention averaging suppresses per-example variance and the entire research framing collapses. This is the move most likely to be replicated, and it should be discussed before the result. *Replication caveat:* the move on Musique relies on `question_decomposition` to produce per-sub-answer ground truth. Datasets without that structure (HotpotQA, NIAH-style retrieval) would require either annotation effort or a model-based localiser; both introduce their own confounds and the move does not transfer for free.
+- **Tight-span localization** is what makes the cache-state signal visible at all. Without it, paragraph-level retention averaging suppresses per-example variance and the entire research framing collapses. This is the move most likely to be replicated, and it should be discussed before the result. *Replication caveat:* the move on Musique relies on `question_decomposition` to produce per-sub-answer ground truth. Datasets without that structure (HotpotQA, NIAH-style retrieval) would require either annotation effort or a model-based localizer; both introduce their own confounds and the move does not transfer for free.
 - **The calibration sub-check** itself — decomposing per-ratio honest_accuracy into overcaution and conditional answer quality — is what made the §5 finding visible. Most papers report aggregate honest_accuracy and stop. The conditional-quality column is the one that survives a hostile reviewer.
-- **D5 fragment-recoverability gating.** Before training, we ran a clean Qwen2.5-7B against the decoded kept-token fragment of every ABSTAIN-labelled example. 0/30 recovery on the original D7 run; 0/30 on the regenerated run on the final machine. Labels are not over-firing. The model objectively *cannot* answer from the fragment.
+- **D5 fragment-recoverability gating.** Before training, we ran a clean Qwen2.5-7B against the decoded kept-token fragment of every ABSTAIN-labeled example. 0/30 recovery on the original D7 run; 0/30 on the regenerated run on the final machine. Labels are not over-firing. The model objectively *cannot* answer from the fragment.
 - **Mask provenance against the production base.** Mask-generator (KVzip on Qwen2.5-7B-Instruct) and mask-consumer (LoRA on Qwen2.5-7B-Instruct) are matched. This is a methods-section sentence, not a result, but mismatched provenance produces inscrutable training instability and is worth documenting.
 
 ## 7. Limitations
 
-- **Single compressor (KVzip).** Whether the adapter generalises to Expected Attention, SnapKV, or kvpress-managed eviction is the most important open question and is the next test.
-- **Single base model (Qwen2.5-7B-Instruct).** Mask-conditioned behaviour is in principle model-specific; transfer untested.
+- **Single compressor (KVzip).** Whether the adapter generalizes to Expected Attention, SnapKV, or kvpress-managed eviction is the most important open question and is the next test.
+- **Single base model (Qwen2.5-7B-Instruct).** Mask-conditioned behavior is in principle model-specific; transfer untested.
 - **Single dataset (Musique 2-hop QA).** HotpotQA, NIAH-style retrieval are not yet evaluated.
 - **Per-ratio class imbalance is structural.** At low ratios most examples have evicted supporting tokens (gold ABSTAIN dominates); at high ratios most have intact ones (gold CONFIDENT dominates). Only ratio=0.50 measures both directions on a balanced slice. The per-ratio honest-accuracy table looks more uniform than it is — the metric at each ratio is mostly testing one direction. Calibration analysis at ratios 0.10/0.20/0.30 is inconclusive (n_conf = 1, 2, 3).
-- **Span redundancy is an open question.** v1 assumes every annotated supporting span is required for the answer (`assume_all_spans_required=True`). If a span is in fact redundant, evicting it should not produce ABSTAIN, and the labelling will be too aggressive. We have no automatic way to detect this in v1.
+- **Span redundancy is an open question.** v1 assumes every annotated supporting span is required for the answer (`assume_all_spans_required=True`). If a span is in fact redundant, evicting it should not produce ABSTAIN, and the labeling will be too aggressive. We have no automatic way to detect this in v1.
 - **Greedy decoding only.** Sampling regimes untested.
 - **Run-to-run variance is small (n=3 seeds; previously a limitation, now resolved — see §7.1).** Per-ratio honest_accuracy spreads ≤ 4pp at every meaningful slice (max 10pp at ratio=0.20, where every seed still scores ≥ 0.87 vs base 0.30). Aggregate honest_accuracy spread is 2pp. The 232 → 7 hallucination drop replicates exactly on all three seeds. Sweep-picked (LR, epoch) varies across seeds — see §7.1 for the methodological note — but the resulting adapter ends up in the same place by per-ratio metrics.
 - **val_v1 was used for both checkpoint selection (val_loss across LR sweep and per-epoch) and the headline evaluation.** No held-out test split exists. The leak is mild — checkpoint selection ranks 3 LRs and 3 epochs, not a large hyperparameter search — but it is a leak, and a final number on a fully unseen split is not what this memo reports. v2 should carve a held-out test split at dataset-construction time.
 
 ### 7.1 Seed variance (n=3)
 
-Three independent training runs with seeds {42, 43, 44}, identical setup otherwise. Adapter eval against `val_v1.jsonl` using KVzip-evicted caches (the v1 headline regime). Base eval is shared across seeds (the base model does not change). Patch in `scripts/run_v1_full.py` adds `--seed` (default 42, reproduces v1) and `--skip-base-eval` (variance-check mode); reseeds python + numpy + torch before each LoRA initialisation (4 points) and each train_epoch (6 points).
+Three independent training runs with seeds {42, 43, 44}, identical setup otherwise. Adapter eval against `val_v1.jsonl` using KVzip-evicted caches (the v1 headline regime). Base eval is shared across seeds (the base model does not change). Patch in `scripts/run_v1_full.py` adds `--seed` (default 42, reproduces v1) and `--skip-base-eval` (variance-check mode); reseeds python + numpy + torch before each LoRA initialization (4 points) and each train_epoch (6 points).
 
 **Sweep-picked hyperparameters (worth flagging):**
 
@@ -117,7 +117,7 @@ Three independent training runs with seeds {42, 43, 44}, identical setup otherwi
 | 43 | 2e-4 | 1 | 0.2234 |
 | **44** | **5e-5** | **2** | 0.2192 |
 
-Sweep val loss at 1-epoch granularity is noisy enough that **seed 44 picks a different LR and a different best-epoch from seeds 42 and 43**. All three nonetheless converge to val_loss ≈ 0.22 and — as the per-ratio table below shows — to essentially the same per-ratio adapter behaviour. The variance lives in the *trajectory*, not the *destination*.
+Sweep val loss at 1-epoch granularity is noisy enough that **seed 44 picks a different LR and a different best-epoch from seeds 42 and 43**. All three nonetheless converge to val_loss ≈ 0.22 and — as the per-ratio table below shows — to essentially the same per-ratio adapter behavior. The variance lives in the *trajectory*, not the *destination*.
 
 **Per-ratio honest_accuracy / hallucination_rate** (base shared across seeds; only adapter changes):
 
@@ -159,11 +159,11 @@ The sweep-picked-LR variance is itself worth a sentence in any paper write-up: 1
 
 ## 8. What v2 should test, in order
 
-1. **Cross-compressor generalisation (binary, paper-defining).** Train remains on KVzip-evicted caches; val is re-run with Expected Attention and SnapKV applying the eviction. If the adapter still helps, the method learns honesty about cache loss in a way that transfers across the compressor used — strongest version of the paper. If it doesn't transfer, the method is compressor-specific — different (still publishable) paper. Either outcome determines which paper is being written.
-2. **Enrich the high-ratio counter-instance regime** to test the §5 finding directly. Currently 4 of 463 val instances at ratio=0.80 are ABSTAIN-gold; this is too few to characterise the failure mode. Either upsample at dataset-construction time or carve out a dedicated diagnostic split.
+1. **Cross-compressor generalization (binary, paper-defining).** Train remains on KVzip-evicted caches; val is re-run with Expected Attention and SnapKV applying the eviction. If the adapter still helps, the method learns honesty about cache loss in a way that transfers across the compressor used — strongest version of the paper. If it doesn't transfer, the method is compressor-specific — different (still publishable) paper. Either outcome determines which paper is being written.
+2. **Enrich the high-ratio counter-instance regime** to test the §5 finding directly. Currently 4 of 463 val instances at ratio=0.80 are ABSTAIN-gold; this is too few to characterize the failure mode. Either upsample at dataset-construction time or carve out a dedicated diagnostic split.
 3. **Decompose calibration vs answer-quality objectives.** Hypothesis: the loss as currently formulated trains the abstain/answer decision, but doesn't separately incentivise answer quality conditional on answering. Try a weighted objective.
 
-(2) and (3) are conditional on (1) and out of scope for this round. v2 itself is out of scope for this round. The next concrete authorised work is the cross-compressor test plus this memo plus the qualitative D5 figure (`artifacts/v1_d5_qualitative.md`, generated by `scripts/finalize_v1_report.py` against the regenerated `fragment_recoverability.jsonl`).
+(2) and (3) are conditional on (1) and out of scope for this round. v2 itself is out of scope for this round. The next concrete authorized work is the cross-compressor test plus this memo plus the qualitative D5 figure (`artifacts/v1_d5_qualitative.md`, generated by `scripts/finalize_v1_report.py` against the regenerated `fragment_recoverability.jsonl`).
 
 ## 9. Two claims, two audiences
 
@@ -171,11 +171,11 @@ The sweep-picked-LR variance is itself worth a sentence in any paper write-up: 1
 > An LLM (Qwen2.5-7B-Instruct + LoRA, r=16) learns to abstain calibrated to its KV cache state under aggressive KVzip compression, eliminating 97% of hallucinations on examples whose supporting evidence was evicted while preserving answer quality on examples whose evidence survived. Honest accuracy improves at every compression ratio tested, with the largest gains in the most-ambiguous regime (ratio=0.50, +21pp).
 
 **Nuanced (this memo's conclusion):**
-> v1 demonstrates that cache-state-conditional abstention is learnable, that the adapter conditions its decision on cache state rather than on compression intensity (monotonic abstention curve, 1.00 → 0.03 across ratios), and that conditional answer quality is preserved within noise where evidence survived. The remaining failure is not a calibration bug but a generalisation gap: the model uses gross cache-fill ratio as a strong prior for answerability and fails on rare counter-instances where supporting tokens were evicted despite high overall retention. That gap is a more informative open problem than a generic calibration drift would have been, and is the cleanest motivation for v2.
+> v1 demonstrates that cache-state-conditional abstention is learnable, that the adapter conditions its decision on cache state rather than on compression intensity (monotonic abstention curve, 1.00 → 0.03 across ratios), and that conditional answer quality is preserved within noise where evidence survived. The remaining failure is not a calibration bug but a generalization gap: the model uses gross cache-fill ratio as a strong prior for answerability and fails on rare counter-instances where supporting tokens were evicted despite high overall retention. That gap is a more informative open problem than a generic calibration drift would have been, and is the cleanest motivation for v2.
 
 ---
 
-## 10. Addendum — cross-compressor generalisation
+## 10. Addendum — cross-compressor generalization
 
 _Appended after the main memo so the v1-on-its-own framing in §1–§9 stays intact and the cross-compressor result reads as a discrete artifact, not a retroactive reframing._
 
@@ -184,7 +184,7 @@ _Appended after the main memo so the v1-on-its-own framing in §1–§9 stays in
 Train remained on KVzip-evicted caches (the entire v1 pipeline above). The val set was regenerated under three additional conditions, holding the same 463 examples and ratios fixed and only varying the compressor:
 
 - **Expected Attention** (kvpress's `ExpectedAttentionPress`, defaults: `n_sink=4`, `n_future_positions=512`, `use_covariance=True`, `use_vnorm=True`). Query-agnostic, in the same family as KVzip.
-- **SnapKV (context-only)** (kvpress's `SnapKVPress`, `window_size=64`, `kernel_size=5`). Fed prefill on context only, no question — mirrors v1 KVzip's pipeline. Neutralises SnapKV's query-aware advantage by construction.
+- **SnapKV (context-only)** (kvpress's `SnapKVPress`, `window_size=64`, `kernel_size=5`). Fed prefill on context only, no question — mirrors v1 KVzip's pipeline. Neutralizes SnapKV's query-aware advantage by construction.
 - **SnapKV (native)** (same press, prefill on context + question + answer prompt). Uses SnapKV as designed — query is in the recent-window the press uses for scoring. Included specifically so we can preempt "did you use SnapKV correctly?"
 
 All four compressors run with `topk` reduction calibrated so `mask.mean() == ratio` exactly (Δ = 0.00pp on every slice, n=100). All evals use the same v1 LoRA adapter (`artifacts/v1_lora_best/`) and the same generation config. Only the kept-token mask varies.
@@ -218,9 +218,9 @@ Two read directly from the table:
 
 ### 10.3 SnapKV-native = SnapKV-context-only is itself a finding
 
-The two SnapKV columns are essentially identical: aggregate Δhon +0.20 vs +0.21, per-ratio numbers within noise at every slice. Whichever way SnapKV is configured, the adapter generalises to it the same amount.
+The two SnapKV columns are essentially identical: aggregate Δhon +0.20 vs +0.21, per-ratio numbers within noise at every slice. Whichever way SnapKV is configured, the adapter generalizes to it the same amount.
 
-This rules out the obvious methodological objection — "you ran SnapKV in context-only mode, so its query-aware advantage was neutralised, that's why transfer is weak." When SnapKV is given its native query-aware advantage, transfer does not improve. The gap is not a setup artifact. The gap is a property of the learned representation.
+This rules out the obvious methodological objection — "you ran SnapKV in context-only mode, so its query-aware advantage was neutralized, that's why transfer is weak." When SnapKV is given its native query-aware advantage, transfer does not improve. The gap is not a setup artifact. The gap is a property of the learned representation.
 
 This is a methodological strength worth reporting explicitly: both conditions appearing in the table preempts the question that would otherwise come up in review.
 
@@ -244,9 +244,9 @@ Of SnapKV-context-only adapter correct-abstentions (n=187), **97% (182/187)** al
 
 Conversely, **89 KVzip correct-abstain examples flip to adapter hallucination under SnapKV** (24 + 25 + 19 + 17 + 4 + 0 across ratios 0.05 → 0.80) — concentrated at low and mid ratios where SnapKV's eviction signature differs most from KVzip's.
 
-Reading: SnapKV doesn't enable the adapter to recognise abstention cases that KVzip didn't already enable. It just causes the adapter to *fail to recognise* abstention cases that KVzip did enable. The adapter has not learned a more general "this cache is broken" signal under SnapKV; it has learned KVzip's specific brokenness signal, and most other-compressor brokenness signals don't trigger it.
+Reading: SnapKV doesn't enable the adapter to recognize abstention cases that KVzip didn't already enable. It just causes the adapter to *fail to recognize* abstention cases that KVzip did enable. The adapter has not learned a more general "this cache is broken" signal under SnapKV; it has learned KVzip's specific brokenness signal, and most other-compressor brokenness signals don't trigger it.
 
-### 10.6 D5 cross-compressor — the cache-content-conditional behaviour
+### 10.6 D5 cross-compressor — the cache-content-conditional behavior
 
 Adapter responses on the 10 D5 wrong-but-specific examples at ratio=0.30, with fragments produced by each compressor (full table in `artifacts/v1_d5_cross_compressor.md`):
 
@@ -258,16 +258,16 @@ Adapter responses on the 10 D5 wrong-but-specific examples at ratio=0.30, with f
 
 The interesting cell is the "confident correct" column: under ExpAttn the adapter produces correct answers on 2 examples (Orleans County, Emilia Galotti) where KVzip's eviction had removed the supporting tokens. Under SnapKV-native it does so on 3 (Orleans, Emilia, conga). These are cases where the new compressor *retained* the answer-bearing tokens that KVzip had evicted, and the adapter — faced with a cache that contains the answer — answered correctly.
 
-This is a **cache-content-conditional** behaviour, not just cache-state-conditional. The adapter is reading what's actually in the cache rather than applying a learned "this question type → abstain" heuristic. v1 was designed to demonstrate cache-state-conditional abstention; demonstrating that the read-the-cache half of the behaviour generalises across compressors is a stronger result than v1 set out to claim.
+This is a **cache-content-conditional** behavior, not just cache-state-conditional. The adapter is reading what's actually in the cache rather than applying a learned "this question type → abstain" heuristic. v1 was designed to demonstrate cache-state-conditional abstention; demonstrating that the read-the-cache half of the behavior generalizes across compressors is a stronger result than v1 set out to claim.
 
-### 10.7 Decomposition: two learned behaviours, two transfer patterns
+### 10.7 Decomposition: two learned behaviors, two transfer patterns
 
-Reading 10.5 and 10.6 together, the cleanest story is that the adapter has learned *two* behaviours and they transfer differently:
+Reading 10.5 and 10.6 together, the cleanest story is that the adapter has learned *two* behaviors and they transfer differently:
 
 - **Read the cache and answer if the answer is there.** Transfers cleanly across all compressors — D5 correct-answer column on ExpAttn and SnapKV-native is the evidence. Reading is reading; the cache content is a sufficient statistic for the adapter regardless of which compressor produced it.
-- **Recognise that the cache is broken and abstain.** Transfers within compressor family but not across. KVzip and ExpAttn produce broken-cache signatures the adapter recognises (75% kept-token overlap at ratio=0.50, ExpAttn correct-abstain 5/10 in D5). SnapKV produces a different brokenness signature (62% overlap, correct-abstain 2/10 ctx, 1/10 native). The recognition behaviour is signature-specific.
+- **Recognize that the cache is broken and abstain.** Transfers within compressor family but not across. KVzip and ExpAttn produce broken-cache signatures the adapter recognizes (75% kept-token overlap at ratio=0.50, ExpAttn correct-abstain 5/10 in D5). SnapKV produces a different brokenness signature (62% overlap, correct-abstain 2/10 ctx, 1/10 native). The recognition behavior is signature-specific.
 
-This decomposition is more informative than "v1 generalises" or "v1 doesn't generalise." It tells a future reader (and v2 us) which half of the adapter's behaviour requires more work.
+This decomposition is more informative than "v1 generalizes" or "v1 doesn't generalize." It tells a future reader (and v2 us) which half of the adapter's behavior requires more work.
 
 ### 10.8 Updated v2 priorities
 
@@ -281,7 +281,7 @@ Before this experiment v2's first two priorities were "cross-compressor test" an
 
 Original §9 punchy version still holds for the within-family setting. With cross-compressor in scope, this is the upgraded version:
 
-> An LLM adapter (Qwen2.5-7B-Instruct + LoRA, r=16) trained on KVzip-evicted caches generalises cleanly to a held-out query-agnostic compressor (Expected Attention: +0.49 aggregate honest accuracy vs +0.53 on the training compressor; 75% mean kept-token overlap at the most-mixed retention ratio). On a query-aware compressor (SnapKV) evaluated in both context-only and native modes, transfer is partial (+0.20 / +0.21 aggregate; 62% overlap), bounded by kept-token overlap rather than evaluation setup. Qualitative analysis on wrong-but-specific examples shows the adapter answers correctly when other compressors retain supporting tokens that the training compressor had evicted — demonstrating the learned behaviour is *cache-content-conditional* in addition to *cache-state-conditional*.
+> An LLM adapter (Qwen2.5-7B-Instruct + LoRA, r=16) trained on KVzip-evicted caches generalizes cleanly to a held-out query-agnostic compressor (Expected Attention: +0.49 aggregate honest accuracy vs +0.53 on the training compressor; 75% mean kept-token overlap at the most-mixed retention ratio). On a query-aware compressor (SnapKV) evaluated in both context-only and native modes, transfer is partial (+0.20 / +0.21 aggregate; 62% overlap), bounded by kept-token overlap rather than evaluation setup. Qualitative analysis on wrong-but-specific examples shows the adapter answers correctly when other compressors retain supporting tokens that the training compressor had evicted — demonstrating the learned behavior is *cache-content-conditional* in addition to *cache-state-conditional*.
 
 Last sentence is the one for the abstract.
 

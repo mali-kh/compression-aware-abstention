@@ -69,7 +69,7 @@ Treat "all compressors @ ratio=0.05" as one stratum for balancing purposes (so C
 Duplicate CONFIDENT rows to bring counts up.
 
 - **Pro**: keeps stratum and minority-fraction commitments intact
-- **Con**: train sees duplicated examples, risks memorisation; goes against your "no oversampling" framing in v1
+- **Con**: train sees duplicated examples, risks memorization; goes against your "no oversampling" framing in v1
 - **Estimated final train size**: ~6700
 
 ### Option F — Proceed anyway with the 5035-row dataset

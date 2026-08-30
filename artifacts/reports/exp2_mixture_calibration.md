@@ -1,6 +1,6 @@
 # Exp 2 — Mixture-adapter calibration sub-check (seed 42)
 
-_Conditional-wrong-rate analysis for the seed-42 mixture adapter against all four val sets. Same decomposition as v1 §4 / §10.4 (the writeup-folder version is `artifacts/writeup/07_calibration_subcheck.md`): for each conclusive (compressor, ratio) cell, separate the adapter's behaviour into (a) overcaution rate (CONFIDENT-gold examples where the adapter abstained instead of answering) and (b) conditional wrong-when-answering rate (wrong-answer count / total examples the adapter chose to answer)._
+_Conditional-wrong-rate analysis for the seed-42 mixture adapter against all four val sets. Same decomposition as v1 §4 / §10.4 (the writeup-folder version is `artifacts/writeup/07_calibration_subcheck.md`): for each conclusive (compressor, ratio) cell, separate the adapter's behavior into (a) overcaution rate (CONFIDENT-gold examples where the adapter abstained instead of answering) and (b) conditional wrong-when-answering rate (wrong-answer count / total examples the adapter chose to answer)._
 
 _Computed in ~30 sec on the existing eval JSONLs — no new generation._
 
@@ -50,9 +50,9 @@ The mixture-trained adapter is not just **more decisive** in the right direction
 
 ### What the v1 §10.4 framing predicted vs what happened
 
-v1 §10.4 framed the calibration sub-check as preempting the obvious reviewer attack — "you traded helpfulness for safety." The defence was: conditional answer quality is preserved within noise; the v1 abstention gain is calibration-net.
+v1 §10.4 framed the calibration sub-check as preempting the obvious reviewer attack — "you traded helpfulness for safety." The defense was: conditional answer quality is preserved within noise; the v1 abstention gain is calibration-net.
 
-For the mixture, the defence is stronger: conditional answer quality is *improved*. The mixture's abstention gain is therefore not a calibration-net trade — it's a calibration-net win plus an answer-quality-net win.
+For the mixture, the defense is stronger: conditional answer quality is *improved*. The mixture's abstention gain is therefore not a calibration-net trade — it's a calibration-net win plus an answer-quality-net win.
 
 ### Counter-finding worth naming
 
@@ -62,7 +62,7 @@ Mechanism speculation: the mixture's training distribution at high ratios includ
 
 ## Where this shows up in the v2 paper
 
-- **§4.1 calibration story**: replaces the v1 "preserved within noise" framing with "improved on 7 of 8 cells, with the KVzip-specific 0.50 overcaution gap closed." Stronger version of the same defence.
+- **§4.1 calibration story**: replaces the v1 "preserved within noise" framing with "improved on 7 of 8 cells, with the KVzip-specific 0.50 overcaution gap closed." Stronger version of the same defense.
 - **Limitations section**: the small overcaution rise at 0.80 (3-10pp) is a fair acknowledgement; still well below base.
 - **Mechanism narrative**: the v1 §5 "gross-fill-proxy heuristic" is weakened by mixture training — direct evidence for why mixture training is the right v2 lead.
 

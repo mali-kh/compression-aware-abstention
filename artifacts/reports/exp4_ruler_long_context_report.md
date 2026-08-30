@@ -1,6 +1,6 @@
 # Exp 4 — RULER multi-key NIAH long-context evaluation
 
-_v1 was trained on Musique 2-hop QA at max 4K context. This experiment evaluates the v1 adapter (no retraining) on RULER multi-key NIAH retrieval at three context lengths up to 16K — testing whether the cache-state-conditional behaviour generalises (a) beyond the training task family (multi-hop reasoning → single-key retrieval) and (b) beyond the training context length (4K → 16K, 4× longer)._
+_v1 was trained on Musique 2-hop QA at max 4K context. This experiment evaluates the v1 adapter (no retraining) on RULER multi-key NIAH retrieval at three context lengths up to 16K — testing whether the cache-state-conditional behavior generalizes (a) beyond the training task family (multi-hop reasoning → single-key retrieval) and (b) beyond the training context length (4K → 16K, 4× longer)._
 
 ## Setup and source caveat
 
@@ -17,7 +17,7 @@ The original plan called for {16K, 32K, 64K}. Available HF source `simonjegou/ru
 
 ## Results
 
-### Per-(length, ratio) gold-state-conditional adapter behaviour
+### Per-(length, ratio) gold-state-conditional adapter behavior
 
 | length | ratio | n_conf | adapter on conf-gold (correct / wrong) | n_abst | adapter on abst-gold (correct=abstained / hallucinated) |
 | --- | --- | --- | --- | --- | --- |
@@ -61,7 +61,7 @@ Across all three lengths, the abstention curve is **monotone declining (with one
 | 0.50 | 91% | 89% | **92%** |
 | 0.80 | 95% | 91% | **94%** |
 
-When the needle survives compression, the adapter answers correctly **86–95%** of the time across all conclusive cells, including at 16K. The "read what's there" half of the v1 behaviour transfers cleanly to long-context retrieval at every length tested.
+When the needle survives compression, the adapter answers correctly **86–95%** of the time across all conclusive cells, including at 16K. The "read what's there" half of the v1 behavior transfers cleanly to long-context retrieval at every length tested.
 
 ### Aggregate per length
 
@@ -77,13 +77,13 @@ This is mechanistically different from the v1 Musique result, where the adapter 
 
 ## Reading
 
-The v1 cache-state-conditional behaviour generalises from Musique 2-hop QA to RULER multi-key NIAH at the longest length tested (16K, 4× the training max). Three things are simultaneously true at 16K:
+The v1 cache-state-conditional behavior generalizes from Musique 2-hop QA to RULER multi-key NIAH at the longest length tested (16K, 4× the training max). Three things are simultaneously true at 16K:
 
 1. **Abstention curve is monotone declining**: 67% / 76% / 74% / 29% / 11% / 0% across the six ratios on abstain-gold. Same qualitative shape as v1's Musique curve.
 2. **Conditional answer quality is strong**: 86–94% correct on confident-gold at the three meaningful slices (0.30 / 0.50 / 0.80). The adapter reads the needle accurately when it survives.
 3. **Aggregate hallucination halves**: 73.2% → 35.5%. Adapter trades hallucinations for abstentions without losing correct answers.
 
-The v1 Musique-trained adapter therefore generalises beyond the training distribution along three axes simultaneously: task family (multi-hop reasoning → single-key retrieval), context length (4K → 16K), and dataset structure (paragraph-based with `question_decomposition` → haystack-based with explicit needle).
+The v1 Musique-trained adapter therefore generalizes beyond the training distribution along three axes simultaneously: task family (multi-hop reasoning → single-key retrieval), context length (4K → 16K), and dataset structure (paragraph-based with `question_decomposition` → haystack-based with explicit needle).
 
 The §5 failure-mode pattern from the v1 memo (adapter uses gross cache-fill ratio as a strong prior, fails on rare counter-instances at high apparent fill) does not contradict this picture. At ratio=0.80 across all three lengths the adapter abstains on 0/20–26 abstain-gold examples — but RULER at 80% retention essentially always retains the needle (it's short), so abstain-gold cells at high ratios are rare-and-hard by construction. The 0/20 reflects this rather than indicating the gap surfaced on Musique.
 
