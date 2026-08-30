@@ -53,7 +53,7 @@ specific file that backs it.
 1. **Tight-span localization.** For each MuSiQue 2-hop example, the
    `question_decomposition` field gives each single-hop sub-answer as a short
    atomic string. Locating it verbatim in its supporting paragraph yields a
-   3-15 token span. Paragraph-level spans (~100 tokens) average out under
+   short span (median 3 tokens). Paragraph-level spans (~100 tokens) average out under
    compression and produce zero label variance at the mid retention ratio; tight
    spans are what make the learning problem well-posed.
 2. **Labeling.** A compressor produces a per-token survival mask at retention
@@ -63,6 +63,11 @@ specific file that backs it.
 3. **Training.** A rank-16 LoRA adapter (10.1M parameters, attention projections
    only) on a frozen Qwen2.5-7B-Instruct, trained to emit the gold answer on
    `CONFIDENT` examples and a fixed refusal string on `ABSTAIN` examples.
+
+Prompt-style KVzip masks come from the vendored reference implementation, not
+from kvpress: kvpress's `KVzipPress` defers eviction in a way that is
+incompatible with prompt-style mask extraction. Expected Attention and SnapKV
+use kvpress, and the compressed-cache experiments use `KVzipPress`.
 
 ## Reproducing from scratch
 
