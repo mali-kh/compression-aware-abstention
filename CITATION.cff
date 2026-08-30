@@ -1,0 +1,21 @@
+cff-version: 1.2.0
+message: "If you use this software or the released adapters, please cite the paper."
+title: "Compression-Aware Abstention"
+authors:
+  - family-names: Khodabandehlou
+    given-names: Mohammadali
+    affiliation: University of Southern California
+  - family-names: Krishnamachari
+    given-names: Bhaskar
+    affiliation: University of Southern California
+license: MIT
+preferred-citation:
+  type: conference-paper
+  title: "Compression-Aware Abstention: Teaching LLMs to Refuse When KV-Compression Masks Remove Answer Evidence"
+  authors:
+    - family-names: Khodabandehlou
+      given-names: Mohammadali
+    - family-names: Krishnamachari
+      given-names: Bhaskar
+  collection-title: "Proceedings of the Workshop on Grounding and Reliability of Language Models (GroundLM) at EMNLP"
+  year: 2026

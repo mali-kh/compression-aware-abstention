@@ -1,0 +1,19 @@
+# Defaults for src/data/label_construction.py
+# These are the τ_high / τ_low thresholds described in the project plan.
+# The gap (τ_low, τ_high) is the deliberate "uncertain" zone — examples
+# falling into it are EXCLUDED from training rather than relabeled.
+
+label_construction:
+  tau_high: 0.8        # >= this fraction of supporting tokens kept => CONFIDENT_ANSWER
+  tau_low: 0.3         # <  this fraction kept => candidate for ABSTAIN
+  # Examples in [tau_low, tau_high) are dropped from training (uncertain zone).
+  drop_uncertain_zone: true
+
+  # v1 limitation: every annotated supporting span is treated as REQUIRED.
+  # Set to false only when redundancy detection becomes a real research artifact.
+  assume_all_spans_required: true
+
+  # If a multi-span answer has *some* spans confidently retained and others
+  # confidently evicted, emit FLAGGED_PARTIAL. Disable this to collapse those
+  # cases into ABSTAIN for ablation.
+  enable_flagged_partial: true

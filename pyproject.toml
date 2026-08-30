@@ -1,0 +1,71 @@
+[project]
+name = "kvcache-research"
+version = "0.0.1"
+description = "Cache-state-conditional generation for KV cache compression — calibrated abstention under aggressive eviction."
+readme = "README.md"
+requires-python = ">=3.10,<3.13"
+dependencies = [
+    # Pinned to match system CUDA toolchain (CUDA 12.8, A10 driver 580.105.08).
+    # System python3 already has torch==2.7.0+cu128 installed and verified working.
+    "torch==2.7.0",
+    # transformers 4.51.3 matches KVzip's upstream pin. Newer versions
+    # (4.55+) refactored DynamicCache (removed _seen_tokens, layers-based
+    # API) and break KVzip's RetainCache/EvictCache. See README "Known
+    # compatibility issues".
+    "transformers==4.51.3",
+    "tokenizers>=0.20",
+    "accelerate>=1.0",
+    # LoRA fine-tuning (D8 onward). peft 0.13+ supports transformers 4.51.x.
+    "peft>=0.13,<0.18",
+    "datasets>=3.0",
+    "numpy>=1.26,<2.3",
+    "pyyaml>=6.0",
+    "pydantic>=2.7",
+    # Musique / HotpotQA loaders sometimes ship as raw JSONL — keep these light.
+    "tqdm>=4.66",
+    "rich>=13.7",
+]
+
+[project.optional-dependencies]
+# NOTE: flash-attn is intentionally NOT a project optional dep. uv resolution
+# needs the torch wheel to build flash-attn from source if no pre-built wheel
+# matches; this fights with `uv sync`. Install it manually AFTER `uv sync`:
+#
+#     uv pip install flash-attn==2.7.4.post1 --no-build-isolation
+#
+# Documented in README.md "Known compatibility issues". Pinned to KVzip's
+# upstream version.
+dev = [
+    "pytest>=8.0",
+    "pytest-xdist>=3.5",
+    "ruff>=0.6",
+    "ipython>=8.0",
+    "jupyter>=1.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src"]
+
+[tool.uv]
+# Use the system PyTorch wheel index for CUDA 12.8 builds.
+# If uv resolves an incompatible CPU-only torch, force --extra-index-url.
+# (Documented in README; flag at sync time, not in stone here.)
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra --strict-markers"
+filterwarnings = [
+    "ignore::DeprecationWarning",
+]
+
+[tool.ruff]
+line-length = 110
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "RUF"]
+ignore = ["E501"]  # line length handled by formatter

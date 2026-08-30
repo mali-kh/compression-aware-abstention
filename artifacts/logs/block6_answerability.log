@@ -1,0 +1,56 @@
+# Block 6 — Answerability preservation
+
+CONFIDENT-gold = `gold_label ∈ {confident, confident_answer}`
+answer-correct = `classification == 'correct' AND model_abstained == False`
+preservation ratio = adapter answer-correct count / base answer-correct count
+
+Caveat: cc rows compare against base under PROMPT-STYLE inference (no base-cc
+on disk); preservation ratio for cc rows is 'cc adapter vs base-ps'.
+
+### Table 1: Aggregate (over all retention ratios)
+
+```
+condition                        | n_C | b cor | a cor | base rate (Wilson 95% CI)    | adapter rate (Wilson 95% CI)    |  pres
+-------------------------------------------------------------------------------------------------------------------------------
+v1 ps,        KVzip val          |  97 |    47 |    54 | 0.485 [0.388,0.583]          | 0.557 [0.458,0.652]             | 1.149
+v1 ps,        ExpAttn val        |  94 |    44 |    54 | 0.468 [0.370,0.568]          | 0.574 [0.474,0.670]             | 1.227
+v1 ps,        SnapKV-ctx val     |  88 |    48 |    50 | 0.545 [0.442,0.645]          | 0.568 [0.464,0.667]             | 1.042
+v1 ps,        SnapKV-nat val     | 127 |    72 |    73 | 0.567 [0.480,0.650]          | 0.575 [0.488,0.657]             | 1.014
+mixture-ps ps, KVzip val         |  97 |    47 |    59 | 0.485 [0.388,0.583]          | 0.608 [0.509,0.699]             | 1.255
+mixture-ps ps, ExpAttn val       |  94 |    44 |    60 | 0.468 [0.370,0.568]          | 0.638 [0.538,0.728]             | 1.364
+mixture-ps ps, SnapKV-ctx val    |  88 |    48 |    52 | 0.545 [0.442,0.645]          | 0.591 [0.486,0.688]             | 1.083
+mixture-ps ps, SnapKV-nat val    | 127 |    72 |    72 | 0.567 [0.480,0.650]          | 0.567 [0.480,0.650]             | 1.000
+mixture-ps cc, KVzip val         |  97 |    47 |    25 | 0.485 [0.388,0.583]          | 0.258 [0.181,0.353]             | 0.532
+mixture-ps cc, SnapKV-ctx val    |  88 |    48 |    11 | 0.545 [0.442,0.645]          | 0.125 [0.071,0.210]             | 0.229
+mixture-cc cc, KVzip val         |  97 |    47 |    24 | 0.485 [0.388,0.583]          | 0.247 [0.172,0.342]             | 0.511
+```
+
+### Table 2: r=0.80 only
+
+```
+condition                        | n_C | b cor | a cor | base rate (Wilson 95% CI)    | adapter rate (Wilson 95% CI)    |  pres
+-------------------------------------------------------------------------------------------------------------------------------
+v1 ps,        KVzip val          |  69 |    36 |    44 | 0.522 [0.406,0.635]          | 0.638 [0.520,0.741]             | 1.222
+v1 ps,        ExpAttn val        |  65 |    32 |    37 | 0.492 [0.375,0.611]          | 0.569 [0.448,0.682]             | 1.156
+v1 ps,        SnapKV-ctx val     |  59 |    32 |    35 | 0.542 [0.417,0.663]          | 0.593 [0.466,0.709]             | 1.094
+v1 ps,        SnapKV-nat val     |  67 |    37 |    39 | 0.552 [0.434,0.665]          | 0.582 [0.463,0.693]             | 1.054
+mixture-ps ps, KVzip val         |  69 |    36 |    45 | 0.522 [0.406,0.635]          | 0.652 [0.534,0.754]             | 1.250
+mixture-ps ps, ExpAttn val       |  65 |    32 |    43 | 0.492 [0.375,0.611]          | 0.662 [0.540,0.765]             | 1.344
+mixture-ps ps, SnapKV-ctx val    |  59 |    32 |    40 | 0.542 [0.417,0.663]          | 0.678 [0.551,0.783]             | 1.250
+mixture-ps ps, SnapKV-nat val    |  67 |    37 |    43 | 0.552 [0.434,0.665]          | 0.642 [0.522,0.746]             | 1.162
+mixture-ps cc, KVzip val         |  69 |    36 |    20 | 0.522 [0.406,0.635]          | 0.290 [0.196,0.406]             | 0.556
+mixture-ps cc, SnapKV-ctx val    |  59 |    32 |     9 | 0.542 [0.417,0.663]          | 0.153 [0.082,0.265]             | 0.281
+mixture-cc cc, KVzip val         |  69 |    36 |    22 | 0.522 [0.406,0.635]          | 0.319 [0.221,0.436]             | 0.611
+```
+
+### Bullet summary
+
+- v1 adapter (ps inference) preservation ratio across the 4 compressors: avg = 1.108; 4/4 cells have ratio ≥ 1.0 (adapter answers correctly at-least-as-often as base on CONFIDENT-gold). Per-cell: KVzip val=1.15, ExpAttn val=1.23, SnapKV-ctx val=1.04, SnapKV-nat val=1.01
+- mixture-cc under cc inference (KVzip val): aggregate preservation ratio = 0.511 (adapter 24/97 vs base-ps 47/97). At r=0.80: 0.611 (adapter 22/69 vs base-ps 36/69).
+- Cells with preservation ratio < 0.8 (substantial sacrifice of correct answers):
+    Aggregate: mixture-ps cc, KVzip val → 0.532
+    Aggregate: mixture-ps cc, SnapKV-ctx val → 0.229
+    Aggregate: mixture-cc cc, KVzip val → 0.511
+    r=0.80:    mixture-ps cc, KVzip val → 0.556
+    r=0.80:    mixture-ps cc, SnapKV-ctx val → 0.281
+    r=0.80:    mixture-cc cc, KVzip val → 0.611

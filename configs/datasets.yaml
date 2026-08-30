@@ -1,0 +1,30 @@
+# Dataset configs. Supporting-span annotation formats are dataset-specific and
+# verified case-by-case in src/data/ — do NOT autoload before checking the
+# raw structure (see project plan note).
+
+musique:
+  hf_id: dgslibisey/MuSiQue
+  split: validation        # use validation; train slice reserved for fine-tune
+  fields:
+    context: paragraphs    # list of {paragraph_text, idx}
+    question: question
+    answer: answer
+    supporting:            # list of paragraph indices used by the gold chain
+      key: question_decomposition
+      span_field: supporting_paragraph_idxs
+
+hotpotqa:
+  hf_id: hotpot_qa
+  config: distractor
+  split: validation
+  fields:
+    context: context       # list of [title, sentences]
+    question: question
+    answer: answer
+    supporting: supporting_facts   # list of [title, sentence_idx]
+
+niah:
+  # Synthetic; generated rather than downloaded. Wrapper script TBD.
+  generator: scripts/build_niah.py    # not yet written
+  context_lengths: [4096, 8192, 16384]
+  needles_per_context: 1

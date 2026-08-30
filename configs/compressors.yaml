@@ -1,0 +1,16 @@
+# Compressor configs. v1 ships KVzip only; others are placeholders so the
+# config schema is committed but not exercised.
+
+default: kvzip
+
+kvzip:
+  enabled: true
+  source: github.com/snu-mllab/KVzip
+  retention_ratios: [0.05, 0.10, 0.20, 0.30]
+  # KVzip-specific knobs filled in once the wrapper lands (Deliverable 3).
+
+expected_attention:
+  enabled: false   # deferred; placeholder only
+
+snapkv:
+  enabled: false   # deferred; placeholder only

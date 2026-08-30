@@ -1,0 +1,76 @@
+# Block 3.6 pivot — mixture-cc adapter under KVzip cc inference
+
+### C. Per-ratio honest accuracy on val_v1.jsonl (KVzip cc inference)
+
+```
+ratio |   n |  base (ps) |    v1 (cc) | mixture-ps cc |     NEW cc | mixture-cc cc
+----------------------------------------------------------------------------------
+0.05  | 100 |      0.150 |      0.560 |      1.000 |      1.000 |      1.000
+0.10  |  95 |      0.274 |      0.495 |      0.958 |      0.989 |      0.989
+0.20  |  82 |      0.305 |      0.415 |      0.829 |      0.939 |      0.963
+0.30  |  65 |      0.354 |      0.323 |      0.600 |      0.600 |      0.923
+0.50  |  48 |      0.438 |      0.271 |      0.354 |      0.354 |      0.500
+0.80  |  73 |      0.507 |      0.233 |      0.315 |      0.178 |      0.315
+AGG   | 463 |      0.317 |      0.406 |      0.730 |      0.734 |      0.821
+```
+
+### D. r=0.80 on CONFIDENT-gold under KVzip cc inference
+
+Over-abstention rate (model abstains while gold is confident_answer):
+
+```
+adapter        |  n_C | over-abst rate | 95% CI (paired bootstrap on subset)
+------------------------------------------------------------------------------------------
+mixture-ps     |   69 |          0.435 | [0.319, 0.551]
+NEW            |   69 |          0.203 | [0.116, 0.304]
+mixture-cc     |   69 |          0.377 | [0.261, 0.493]
+```
+
+Hallucination count (gold=confident_answer, classification=wrong_answer):
+
+```
+adapter        |  n_C | hallucinations | as fraction
+------------------------------------------------------------
+mixture-ps     |   69 |             19 | 0.275
+NEW            |   69 |             42 | 0.609
+mixture-cc     |   69 |             21 | 0.304
+```
+
+### E. Paired McNemar at r=0.80 on CONFIDENT-gold under KVzip cc
+
+#### mixture-cc vs mixture-ps
+
+  n_C = 69
+  b (mixture-cc correct, mixture-ps wrong) = 9
+  c (mixture-ps correct, mixture-cc wrong) = 7
+  exact p = 0.8036
+  Δ on honest-correct = +0.029  (mixture-cc − mixture-ps)
+  95% CI on Δ (paired bootstrap) = [-0.087, +0.145]
+  over-abstain on C-gold:  mixture-cc=0.377  vs  mixture-ps=0.435
+
+#### mixture-cc vs NEW
+
+  n_C = 69
+  b (mixture-cc correct, NEW wrong) = 14
+  c (NEW correct, mixture-cc wrong) = 5
+  exact p = 0.06357
+  Δ on honest-correct = +0.130  (mixture-cc − NEW)
+  95% CI on Δ (paired bootstrap) = [+0.014, +0.246]
+  over-abstain on C-gold:  mixture-cc=0.377  vs  NEW=0.203
+
+### F. Qualitative bucket distribution on mixture-cc r=0.80 hallucinations
+
+  n_hallucinations on mixture-cc at r=0.80 (C-gold) = 21
+
+  (tokenizer load failed: ModuleNotFoundError: No module named 'transformers')
+  Falling back to skipping kept-vs-evicted distinction; reporting raw response/gold for all 21 cases.
+    id=2hop__2222_442521  gold='Jefferson Lecture'  resp='Academy Award'
+    id=2hop__60372_34638  gold='March 44 BC'  resp='28 November 1912'
+    id=2hop__51654_34638  gold='March 44 BC'  resp='47 BCI came; I saw; I conquered.'
+    id=2hop__563921_149236  gold='Emperor of India'  resp='dictator'
+    id=2hop__135584_34638  gold='March 44 BC'  resp='March 144 BC'
+    id=2hop__45575_34638  gold='March 44 BC'  resp='47 BC'
+    id=2hop__41649_10038  gold='Qiantang'  resp='Bianjing'
+    id=2hop__10126_10038  gold='Qiantang'  resp='Jiankang'
+    id=2hop__770304_149236  gold='Emperor of India'  resp='heir apparent'
+    id=2hop__123210_700310  gold='Uppsala University Library'  resp='Carolina Rediviva'

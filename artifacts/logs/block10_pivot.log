@@ -1,0 +1,74 @@
+# Block 10 — adversarial / controlled-deletion analysis
+
+## Section 10A: Fixed-retained-length L=500 vs original-ratio (prompt-style)
+
+Subset: val_v1.jsonl records with sum(kept_mask) >= 500. Same records used
+for both conditions; difference is only the kept_mask shape.
+
+```
+adapter      | cond       |   n | CONF n | CONF hon (CI)            | ABST n | ABST hon (CI)            | agg hon (CI)            
+----------------------------------------------------------------------------------------------------------------------------------
+mixture-ps   | fixed-L    | 208 |     95 | 0.147 [0.090, 0.232]     |    113 | 0.885 [0.813, 0.932]     | 0.548 [0.480, 0.614]    
+mixture-ps   | orig-r     | 208 |     95 | 0.621 [0.521, 0.712]     |    113 | 0.823 [0.742, 0.882]     | 0.731 [0.667, 0.786]    
+mixture-cc   | fixed-L    | 208 |     95 | 0.063 [0.029, 0.131]     |    113 | 0.956 [0.901, 0.981]     | 0.548 [0.480, 0.614]    
+mixture-cc   | orig-r     | 208 |     95 | 0.274 [0.194, 0.371]     |    113 | 0.956 [0.901, 0.981]     | 0.644 [0.577, 0.706]    
+```
+
+Interpretation: if the adapter relied on retention-length priors (short input ⇒ abstain), forcing all examples to L=500 should change behavior
+substantially compared to the original (variable-length) ratio masks.
+
+## Section 10B: Adversarial tight-span eviction (CONFIDENT-gold, all ratios)
+
+Mask = existing kept_mask MINUS tight-span tokens, refilled to original
+retention with random non-kept positions (seed=42 + record id).
+
+Correct behaviour given the construction: model should ABSTAIN since the
+answer-bearing tokens are gone.
+
+```
+adapter      | cond       |  n_C | abst rate (CI)           | correct count | wrong count
+-----------------------------------------------------------------------------------------
+mixture-ps   | adversar.  |   97 | 0.567 [0.468, 0.661]     | 5             | 37         
+mixture-ps   | orig-mask  |   97 | 0.165 [0.104, 0.251]     | 59            | 22         
+mixture-cc   | adversar.  |   97 | 0.887 [0.808, 0.935]     | 2             | 9          
+mixture-cc   | orig-mask  |   97 | 0.649 [0.550, 0.737]     | 26            | 8          
+```
+
+Per-pair (adversar-vs-orig) per adapter:
+
+```
+adapter      | pair n | abst-FLIP cases | orig-abst → adv-abst   | orig-answ → adv-abst  
+mixture-ps   |     97 | 41             | 14                     | 41                    
+mixture-cc   |     97 | 25             | 61                     | 25                    
+```
+
+Interpretation: 'orig-answ → adv-abst' counts pairs where the adapter answered 
+on the original mask but abstained on the adversarial (tight-spans-evicted)
+mask. High count = adapter responds to evidence absence. Low count = adapter
+doesn't notice evidence removal.
+
+## Section 10C: Anti-priority paired (r=0.50 CONFIDENT-gold)
+
+Mask A: existing kept_mask (KVzip top-50%); Mask B: bit-flipped (KVzip bottom-50%).
+Same length, same example, opposite KVzip-rank prioritisation.
+
+Discrimination: correct on A AND (abstained-or-non-correct) on B.
+
+```
+adapter      |   n | A correct | B correct | B abst | discrim (CI)             |  A→B agree
+-------------------------------------------------------------------------------------------
+mixture-ps   |  22 |        14 |         0 |     22 | 0.636 [0.430, 0.803]     |          5
+mixture-cc   |  22 |         5 |         0 |     20 | 0.182 [0.073, 0.385]     |         15
+```
+
+Discrimination = (A correct ∧ B abstained) / n. The cleanest mechanism test:
+if the adapter's behavior is evidence-content-driven, mask A (where tight spans
+survive) should yield correct answers and mask B (where tight spans are evicted)
+should yield abstentions. If the adapter is length-prior-driven, both masks are
+the same length (50% of n_ctx) so behavior should be similar.
+
+## Aggregate bullet summary
+
+- 10A (length-prior): mixture-ps: fixed-L hon=0.548, orig-ratio hon=0.731, Δ=-0.183; mixture-cc: fixed-L hon=0.548, orig-ratio hon=0.644, Δ=-0.096.
+- 10B (adversarial eviction): mixture-ps: orig abst=0.165, adv abst=0.567, Δ=+0.402; mixture-cc: orig abst=0.649, adv abst=0.887, Δ=+0.237.
+- 10C (discrimination at fixed retention): mixture-ps: discrim=0.636 (n=22); mixture-cc: discrim=0.182 (n=22).

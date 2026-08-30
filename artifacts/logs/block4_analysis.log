@@ -1,0 +1,238 @@
+# Block 4 — LLM-as-judge label validation
+
+Judge model: gpt-5 (reasoning_effort=low, seed=42; temperature=0 not supported by GPT-5)
+Total joined: 400
+Verdicts: Counter({'NO': 215, 'YES': 137, 'PARTIAL': 48})
+Note: PARTIAL n=48; INVALID n=0
+
+## Section 1: Headline agreement statistics
+
+  κ (strict, excluding PARTIAL/INVALID, n=352):  0.609
+      raw agreement: 0.804
+  κ (lenient, PARTIAL→YES, n=400):  0.525
+      raw agreement: 0.762
+  κ (lenient, PARTIAL→NO, n=400):  0.545
+      raw agreement: 0.772
+
+## Section 2: Confusion matrix
+
+```
+                  | judge YES | judge NO | judge PARTIAL | judge INVALID | row total
+-------------------|-----------|----------|---------------|---------------|----------
+our CONFIDENT      |       123 |       55 |            22 |             0 |       200
+our ABSTAIN        |        14 |      160 |            26 |             0 |       200
+col total          |       137 |      215 |            48 |             0 |       400
+```
+
+## Section 3: Per-ratio agreement
+
+Agreement = our CONFIDENT ↔ judge YES, our ABSTAIN ↔ judge NO. Excludes PARTIAL.
+
+```
+ratio | n_total | n_PARTIAL | n_excl_PARTIAL | agreement | by-class agreement (CONF / ABST)
+------|---------|-----------|----------------|-----------|---------------------------------
+0.05  |      51 |         1 |             50 |     1.000 | CONF=              —  ABST=     1.000 (50)
+0.10  |      34 |         0 |             34 |     0.971 | CONF=      0.000 (1)  ABST=     1.000 (33)
+0.20  |      44 |         5 |             39 |     0.692 | CONF=      0.250 (8)  ABST=     0.806 (31)
+0.30  |      64 |        12 |             52 |     0.731 | CONF=     0.607 (28)  ABST=     0.875 (24)
+0.50  |      66 |        12 |             54 |     0.759 | CONF=     0.607 (28)  ABST=     0.923 (26)
+0.80  |     141 |        18 |            123 |     0.764 | CONF=    0.770 (113)  ABST=     0.700 (10)
+```
+
+## Section 4: Qualitative disagreement analysis
+
+### 4a. CONFIDENT (ours) → NO (judge): n=55
+
+  Pattern: our label says the truncated context supports a specific answer, but the judge says the context lacks the evidence.
+
+#### Case 1: id=2hop__3656_40087, ratio=0.8, kept_tokens=2425
+  query: How many volumes are in the national library of the country where police experienced problems with violent protestors?
+  gold answer: '70,000'
+  judge reasoning: The context links violent protests with police to Nepal and states its National Library has more than 7,000 books, not 70,000.
+
+#### Case 2: id=2hop__95312_568514, ratio=0.5, kept_tokens=1178
+  query: Who is the spouse of the cast member of La Boum?
+  gold answer: 'Christopher Lambert'
+  judge reasoning: The context lists Sophie Marceau as a La Boum cast member and mentions Christopher Lambert in another film, but it never states any spouse relationship between them.
+
+#### Case 3: id=2hop__35440_35465, ratio=0.8, kept_tokens=1918
+  query: What does the abbreviation of the agency that officially recognized women's football in 1971 Stand for?
+  gold answer: 'European Championship'
+  judge reasoning: The context mentions UEFA recognizing women's football but does not expand the abbreviation, and "European Championship" refers to a competition, not what UEFA stands for.
+
+#### Case 4: id=2hop__135799_442683, ratio=0.3, kept_tokens=672
+  query: What languages are spoken, written or signed by the person the Schiff test is named after?
+  gold answer: 'Italian'
+  judge reasoning: The context identifies Hugo Schiff and mentions he was "Italianized" in nationality but does not explicitly state any languages he spoke, wrote, or signed.
+
+#### Case 5: id=2hop__96058_427736, ratio=0.3, kept_tokens=977
+  query: What language is used by the cast member of Emanuelle and the White Slave Trade?
+  gold answer: 'Italian'
+  judge reasoning: The context about "Emanuelle and the White Slave Trade" does not mention the language used by any cast member, so Italian cannot be derived.
+
+#### Case 6: id=2hop__26953_85063, ratio=0.5, kept_tokens=1251
+  query: When did the admiral twin open in Oklahoma's 2nd-largest city?
+  gold answer: '1998'
+  judge reasoning: The context only mentions "Adal Twin" touring as an opening act in 1998 and does not state an opening date in Oklahoma's second-largest city nor clearly identify that city.
+
+#### Case 7: id=2hop__149946_465977, ratio=0.8, kept_tokens=1917
+  query: Who is the original broadcaster of season 1 of the show the Hasaris are in?
+  gold answer: 'Sci-Fi Channel'
+  judge reasoning: The context links the Hasaris to a 1978 Battlestar Galactica and a video game, while the only broadcaster mentioned (Sci-Fi Channel) pertains to the reimagined series, so it doesn't support the reference answer.
+
+#### Case 8: id=2hop__94893_427736, ratio=0.8, kept_tokens=1591
+  query: What language was used by the cast member of Black Emanuelle?
+  gold answer: 'Italian'
+  judge reasoning: The context does not state the language used by a cast member of Black Emanuelle, and mentioning related films as Italian does not explicitly confirm the cast member's language.
+
+#### Case 9: id=2hop__9418_793868, ratio=0.8, kept_tokens=1664
+  query: Where did the person who studied the shapes of crystals died?
+  gold answer: 'Saint Petersburg'
+  judge reasoning: The context identifies Leonhard Euler as the person who studied crystal shapes but does not state where he died, so "Saint Petersburg" cannot be derived from the provided text.
+
+#### Case 10: id=2hop__3773_384066, ratio=0.5, kept_tokens=1074
+  query: what language is spoken by the actress who decided not to participate in April 15?
+  gold answer: 'Hindi'
+  judge reasoning: The context mentions Soha Ali Khan (an actress) pulling out on April 5 and appearing in a Hindi film, but it does not mention April 15 or explicitly state what language she speaks.
+
+#### Case 11: id=2hop__155906_469474, ratio=0.3, kept_tokens=695
+  query: Where did Mok Kwai-lan's spouse die?
+  gold answer: 'Canton'
+  judge reasoning: The truncated context mentions Mok Kwai-lan and her spouse Wong Fei-hung but does not state where he died.
+
+#### Case 12: id=2hop__446133_47353, ratio=0.8, kept_tokens=1438
+  query: Who played the performer of When He Walks on You in Walk the Line?
+  gold answer: 'Waylon Malloy Payne'
+  judge reasoning: The context identifies "When He Walks on You" as a Jerry Lee Lewis song but does not state who portrayed him in Walk the Line or link Waylon Malloy Payne to that role.
+
+#### Case 13: id=2hop__108897_685393, ratio=0.8, kept_tokens=1715
+  query: Where was the creator of the White Rabbit born?
+  gold answer: 'Daresbury'
+  judge reasoning: The context mentions the White Rabbit (a Lewis Carroll character) and Daresbury (as a festival location) but does not state that the creator was born in Daresbury.
+
+#### Case 14: id=2hop__821106_120035, ratio=0.8, kept_tokens=1567
+  query: What year was the end of the manufacturer of the Hudson Wasp?
+  gold answer: '1954'
+  judge reasoning: The Hudson Wasp entry has truncated dates (“152 through 16” and “15 and 16”), and nowhere explicitly states 1954 as the end year.
+
+#### Case 15: id=2hop__109366_685393, ratio=0.8, kept_tokens=1680
+  query: Where was the guy who devised Mock Turtle born?
+  gold answer: 'Daresbury'
+  judge reasoning: The context mentions the Mock Turtle was devised by Lewis Carroll and separately describes Daresbury, but it does not state Carroll’s birthplace or link him to Daresbury.
+
+#### Case 16: id=2hop__806856_44359, ratio=0.8, kept_tokens=1730
+  query: How many episodes are there about the Menendez brothers, on the show featuring the character Serena Southerlyn?
+  gold answer: 'eight'
+  judge reasoning: The context notes Serena Southerlyn is from Law & Order and separately that Law & Order True Crime has an eight-episode Menendez season, but it does not establish that the show featuring Serena Southerlyn has those Menendez episodes.
+
+#### Case 17: id=2hop__45324_576533, ratio=0.2, kept_tokens=817
+  query: Who is married to the actress of the woman ape from Planet of the Apes?
+  gold answer: 'Tim Burton'
+  judge reasoning: The context identifies the female ape character Ari as portrayed by Helena Bonham Carter and mentions director Tim Burton, but it does not state that she is married to him.
+
+#### Case 18: id=2hop__146316_530896, ratio=0.5, kept_tokens=968
+  query: In which county is the place where Brandon Teena died?
+  gold answer: 'Allen County'
+  judge reasoning: The context only states that Brandon Teena was murdered in Humboldt, Nebraska, and separately that Humboldt, Kansas is in Allen County; it does not link Humboldt, Nebraska to any county.
+
+#### Case 19: id=2hop__729403_47353, ratio=0.8, kept_tokens=1667
+  query: Who played the Last Man Standing singer in Walk the Line?
+  gold answer: 'Waylon Malloy Payne'
+  judge reasoning: The context lists Waylon Malloy Payne and mentions Jerry Lee Lewis's "Last Man Standing" album, but it does not state that Payne played the singer in Walk the Line.
+
+#### Case 20: id=2hop__135799_442683, ratio=0.2, kept_tokens=448
+  query: What languages are spoken, written or signed by the person the Schiff test is named after?
+  gold answer: 'Italian'
+  judge reasoning: The context mentions Hugo Schiff and an "Italianized nationality" but does not explicitly state any languages he spoke, wrote, or signed.
+
+#### Case 21: id=2hop__50631_26789, ratio=0.5, kept_tokens=996
+  query: where did the actor who played clyde in Bonnie and Clyde attend school?
+  gold answer: "Northwestern's School of Communication"
+  judge reasoning: The context does not state where the actor who played Clyde attended school, and the Northwestern section is generic with no explicit link to that actor.
+
+#### Case 22: id=2hop__694936_91422, ratio=0.3, kept_tokens=746
+  query: How man times have the Cowboys beaten Anthony Weaver's team?
+  gold answer: '7'
+  judge reasoning: The truncated context does not clearly state how many times the Cowboys have beaten Anthony Weaver's team, and the fragmented statistics are incomplete and ambiguous.
+
+#### Case 23: id=2hop__143056_552124, ratio=0.8, kept_tokens=1423
+  query: What was the record label of the artist of Sou Hrostao Akoma Ena Klama?
+  gold answer: 'BMG'
+  judge reasoning: The context says the album was released by MinosMI and only mentions BMG Greece for Peggy Zina’s debut album, so it does not support deriving BMG as the artist’s label here.
+
+#### Case 24: id=2hop__90091_83984, ratio=0.5, kept_tokens=1232
+  query: What actor who played the president in "The American President" starred in "Las Vegas"?
+  gold answer: 'Last Vegas'
+  judge reasoning: The context identifies Michael Douglas as the actor and "Last Vegas" as the film, so it does not support the reference answer which is a film title rather than the actor's name.
+
+#### Case 25: id=2hop__149673_44359, ratio=0.8, kept_tokens=1970
+  query: How many episodes about the Menendez Brothers are in the show Anita Van Buren is from?
+  gold answer: 'eight'
+  judge reasoning: The context says Anita Van Buren is from Law & Order and separately that Law & Order True Crime had an eight-episode Menendez season, but it does not state that Law & Order itself had Menendez episodes.
+
+
+### 4b. ABSTAIN (ours) → YES (judge): n=14
+
+  Pattern: our label says the truncated context is insufficient (we expect the model to abstain), but the judge says the context is enough to derive the answer.
+
+#### Case 1: id=2hop__64591_24792, ratio=0.2, kept_tokens=657
+  query: What was the response of the first research to suggest that face expressions are pre-verbal to the claims that animals could not have evolved through natural selection?
+  gold answer: 'Darwin proposed scenarios for the incremental evolution of each feature.'
+  judge reasoning: The context states that a chapter responded to criticisms by proposing scenarios of incremental adaptive stages for features like eyes and camouflage, matching the reference answer.
+
+#### Case 2: id=2hop__71940_70625, ratio=0.3, kept_tokens=656
+  query: When did the army that introduced tanks to battlefields in WWI start wearing khaki?
+  gold answer: 'early 1900s'
+  judge reasoning: The context identifies the British Army as the tank introducer and states its khaki uniform was introduced in the field in the 0s based on Boer War experiences, implying the early 1900s.
+
+#### Case 3: id=2hop__497258_127916, ratio=0.3, kept_tokens=693
+  query: What league was Shalon Baker's team in?
+  gold answer: 'Canadian Football League'
+  judge reasoning: The Baker entry explicitly mentions the CFL and states he left the CFL, indicating his team was in the Canadian Football League.
+
+#### Case 4: id=2hop__27031_85063, ratio=0.2, kept_tokens=472
+  query: When did Admiral Twin open for Hanson, in the city where Southern Hills Country Club is found?
+  gold answer: '1998'
+  judge reasoning: The context mentions Tulsa (home of Southern Hills Country Club) and states the band was an opening act for Hanson in "summer8," which directly implies 1998.
+
+#### Case 5: id=2hop__96260_79129, ratio=0.3, kept_tokens=652
+  query: Who does the actor who starred in The Caveman's Valentine play in the film Avengers?
+  gold answer: 'Nick Fury'
+  judge reasoning: The context links "The Caveman's Valentine" to Jackson and states that L. Jackson's likeness is used for Nick Fury in the Marvel Cinematic Universe including Avengers.
+
+#### Case 6: id=2hop__62735_7672, ratio=0.8, kept_tokens=2120
+  query: What was the first year of men's basketball at the university that Danny Manning played for?
+  gold answer: '1898'
+  judge reasoning: Danny Manning played for Kansas, and the University of Kansas section states KU has fielded a men's basketball team every year since 1898.
+
+#### Case 7: id=2hop__24612_243409, ratio=0.2, kept_tokens=606
+  query: In what U.S. conflict was involved the most famous army of the Confederacy?
+  gold answer: 'American Civil War'
+  judge reasoning: The context references the Union, secession, and campaigns like Atlanta and Savannah, clearly indicating the U.S. Civil War, which is the conflict involving Confederate armies.
+
+#### Case 8: id=2hop__26977_85063, ratio=0.2, kept_tokens=385
+  query: When did Admiral Twin tour with pop-stars from the town where Heller Theatre is based?
+  gold answer: '1998'
+  judge reasoning: The context mentions Heller Theatre tied to Tulsa and that the band toured as an opening act for Tulsa pop-stars Hanson in “summer8,” i.e., summer 1998.
+
+#### Case 9: id=2hop__14164_57555, ratio=0.2, kept_tokens=637
+  query: What is the name of the latest version of the OS X operating system of the company against which the lawsuit of Apple vs Microsoft and Hewlett-Packard was decided?
+  gold answer: 'macOS'
+  judge reasoning: The context indicates that OS X was renamed to macOS (“previously X”), so the latest version name of Apple’s OS X operating system is macOS.
+
+#### Case 10: id=2hop__62735_7666, ratio=0.8, kept_tokens=2245
+  query: How many national female outdoor track and field championships have been won by the college that Danny Manning played for?
+  gold answer: 'one'
+  judge reasoning: Danny Manning played for Kansas, and the University of Kansas entry states they have won "one women outdoor [track] and field" national championship.
+
+#### Case 11: id=2hop__72296_18135, ratio=0.2, kept_tokens=717
+  query: What is often pointed to as the one reason for the inconsistent late season play of the team who won last year's World Series?
+  gold answer: 'unusually high number of day games'
+  judge reasoning: The context explicitly says for the Chicago Cubs (noted as the recent World Series champions) that an "unusually [high number of] day games is often pointed to [as the] reason" for their inconsistent late-season play.
+
+#### Case 12: id=2hop__852_41622, ratio=0.5, kept_tokens=1948
+  query: Who did the Han Chinese want to help fight against alongside the people who imposed their military might on Tibet?
+  gold answer: 'the Jin'
+  judge reasoning: The context explicitly says Han Chinese defected to the Mongols to fight against the Jin, allowing the answer "the Jin" to be derived.
+
+#### Case 13: id=2hop__16774_861338, ratio=0.5, kept_tokens=1137

@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+
+# uv / venvs
+.venv/
+.venv-*/
+.python-version
+
+# IDE
+.vscode/
+.idea/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Datasets and model weights are hosted on the Hugging Face Hub, not in git
+/data/
+/datasets/
+/checkpoints/
+/artifacts/adapters/
+*.bin
+*.safetensors
+*.pt
+*.gguf
+wandb/
+
+# Vendored third-party code (cloned per environment, version pinned in README)
+/third_party/
+
+# Logs and scratch
+scratch/
+tmp/
+
+# OS
+.DS_Store

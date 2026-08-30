@@ -1,0 +1,75 @@
+# LoRA training config — cache-state-conditional generation v1
+#
+# DRY-RUN values are tuned for the 0.6B base. Production columns below
+# document recommended values for Qwen2.5-7B-Instruct on a single H100;
+# they are NOT auto-applied — train_dry_run.py uses the dry-run section.
+#
+# These hyperparameters are starting points, justified inline. The first
+# real training run should sweep LR (1e-4 / 5e-5 / 2e-4) before
+# committing.
+
+base_model: Qwen/Qwen3-0.6B   # dry-run only; production switches to Qwen2.5-7B-Instruct
+
+lora:
+  r: 16                         # standard LoRA rank for 7B-class instruct fine-tuning
+  lora_alpha: 32                # alpha = 2*r is a common default for stable scaling
+  lora_dropout: 0.05            # mild — dataset is 2.6K instances, regularization helps
+  bias: none
+  target_modules:
+    - q_proj
+    - k_proj
+    - v_proj
+    - o_proj
+  task_type: CAUSAL_LM
+
+optim:
+  learning_rate: 1.0e-4         # LoRA-typical (10x what full fine-tune would use)
+  weight_decay: 0.0
+  warmup_ratio: 0.03            # ~30 steps over a 1000-step schedule
+  lr_scheduler_type: cosine
+
+training:
+  per_device_train_batch_size: 2     # dry-run: small batch is fine on 0.6B
+  gradient_accumulation_steps: 4     # effective batch 8
+  num_train_epochs: 3
+  bf16: true                          # A10 / H100 native; matches model load dtype
+  gradient_checkpointing: true        # mandatory for 7B; cheap on 0.6B
+  max_seq_length: 4096                # matches dataset ctx cap
+  logging_steps: 1
+  save_steps: 9999                    # dry-run: don't checkpoint mid-train
+  seed: 42
+
+dry_run:
+  n_examples: 10                # only first 10 of train_v1.jsonl
+  max_steps: 5                  # 5 optimizer steps
+  output_dir: artifacts/dry_run_adapter
+
+# ============================================================================
+# Production recommendations (NOT auto-applied; copy into a v2.yaml when
+# authorizing a real run).
+#
+# Base model            : Qwen/Qwen2.5-7B-Instruct
+# per_device batch size : 1
+# gradient_accumulation : 16   -> effective batch 16
+# learning_rate         : 1.0e-4 with cosine; sweep {5e-5, 1e-4, 2e-4} first
+# num_train_epochs      : 3
+# max_seq_length        : 4096
+# bf16                  : true
+# gradient_checkpointing: true (mandatory on A10; recommended on H100 too)
+# eval_strategy         : steps; eval_steps: 50 on val_v1.jsonl
+# save_steps            : 100; keep last 3 checkpoints
+#
+# Wall-clock estimate (1 H100, 80GB, no flash-attn 3):
+#   2653 instances / 16 effective batch = ~166 steps/epoch
+#   ~1.5s per step (7B + LoRA + bf16 + gradient checkpointing)
+#   ~250s per epoch * 3 epochs = ~12-15 min total
+#
+# Wall-clock estimate (1 A10, 23GB):
+#   Same step count, but ~5-7s per step (memory-bound at seq=4096)
+#   ~14-20 min per epoch * 3 = ~45-60 min total
+#
+# CRITICAL pre-train checks (D8 verifies these on dry-run):
+#   1. Unmasked tokens == exactly target_output (not just final word)
+#   2. tokenizer.padding_side == "left"
+#   3. apply_mask=True and =False give materially different logits
+# ============================================================================

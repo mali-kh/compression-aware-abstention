@@ -1,0 +1,23 @@
+[setup] loading tokenizer Qwen/Qwen2.5-7B-Instruct ...
+[setup] loading sample from artifacts/block4_sample.jsonl ...
+[setup] 400 examples to judge with model=gpt-5
+[resume] 5 already judged in log; skipping those
+[run] 395 calls to make
+  progress 25/395  err=0  rate=0.6/s  eta=582s  (39s elapsed)
+  progress 50/395  err=0  rate=0.8/s  eta=446s  (65s elapsed)
+  progress 75/395  err=0  rate=0.8/s  eta=392s  (92s elapsed)
+  progress 100/395  err=0  rate=0.8/s  eta=357s  (121s elapsed)
+  progress 125/395  err=0  rate=0.8/s  eta=320s  (148s elapsed)
+  progress 150/395  err=0  rate=0.9/s  eta=271s  (166s elapsed)
+  progress 175/395  err=0  rate=0.9/s  eta=253s  (201s elapsed)
+  progress 200/395  err=0  rate=0.9/s  eta=225s  (231s elapsed)
+  progress 225/395  err=0  rate=0.9/s  eta=185s  (245s elapsed)
+  progress 250/395  err=0  rate=0.9/s  eta=156s  (269s elapsed)
+  progress 275/395  err=0  rate=1.0/s  eta=125s  (287s elapsed)
+  progress 300/395  err=0  rate=0.9/s  eta=101s  (318s elapsed)
+  progress 325/395  err=0  rate=1.0/s  eta=73s  (340s elapsed)
+  progress 350/395  err=0  rate=1.0/s  eta=47s  (367s elapsed)
+  progress 375/395  err=0  rate=1.0/s  eta=21s  (391s elapsed)
+  progress 395/395  err=0  rate=1.0/s  eta=0s  (410s elapsed)
+
+[done] 395 calls, 0 errors in 410s

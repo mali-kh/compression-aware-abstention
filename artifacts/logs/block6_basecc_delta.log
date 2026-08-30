@@ -1,0 +1,38 @@
+# Block 6 follow-up — KVzip cc cells with base-cc comparator
+
+## Section 1: Sanity check
+
+Base under KVzip cc inference, n=463
+  Aggregate honest accuracy: 0.186
+  (Reference: base under prompt-style inference = 0.317 from existing tables)
+
+Base-cc CONFIDENT-gold answer-correct counts:
+  Aggregate (n_C=97): 4 correct  (0.041)
+  r=0.80   (n_C=69): 1 correct  (0.014)
+
+## Section 2: Updated Block 6 cc-inference cells
+
+### Aggregate
+
+```
+condition                    |  n_C | b cc |    a | base-cc rate (Wilson 95% CI)   | adapter rate (Wilson 95% CI)   | pres NEW | pres OLD
+-----------------------------------------------------------------------------------------------------------------------------------------
+mixture-ps cc, KVzip val     |   97 |    4 |   25 | 0.041 [0.016, 0.101]           | 0.258 [0.181, 0.353]           |    6.250 |    0.532
+mixture-cc cc, KVzip val     |   97 |    4 |   24 | 0.041 [0.016, 0.101]           | 0.247 [0.172, 0.342]           |    6.000 |    0.511
+```
+
+### r=0.80
+
+```
+condition                    |  n_C | b cc |    a | base-cc rate (Wilson 95% CI)   | adapter rate (Wilson 95% CI)   | pres NEW | pres OLD
+-----------------------------------------------------------------------------------------------------------------------------------------
+mixture-ps cc, KVzip val     |   69 |    1 |   20 | 0.014 [0.003, 0.078]           | 0.290 [0.196, 0.406]           |   20.000 |    0.556
+mixture-cc cc, KVzip val     |   69 |    1 |   22 | 0.014 [0.003, 0.078]           | 0.319 [0.221, 0.436]           |   22.000 |    0.611
+```
+
+## Section 3: Interpretation
+
+- Recomputed preservation ratios (vs base-cc, KVzip cc inference):
+    mixture-ps cc, KVzip val: agg pres = 6.250 (a=25/4); r=0.80 pres = 20.000 (a=20/1)
+    mixture-cc cc, KVzip val: agg pres = 6.000 (a=24/4); r=0.80 pres = 22.000 (a=22/1)
+- Both KVzip cc cells now preserve ≥ 0.8 of base-cc's correct answers, clearing the 0.8 threshold.
