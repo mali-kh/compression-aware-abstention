@@ -1,0 +1,611 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Compression-Aware Abstention Poster</title>
+<style>
+  @page { size: 841mm 1189mm; margin: 0; }
+  :root {
+    --bg: #f6f6f3;
+    --card: #ffffff;
+    --ink: #14161a;
+    --ink2: #4a4c52;
+    --muted: #7b7d84;
+    --line: #e4e4e0;
+    --navy: #0d2a52;
+    --navy2: #123a70;
+    --accent: #2a78d6;
+    --accent-soft: #e8f1fc;
+    --evidence: #eda100;
+    --wrong: #d93f3e;
+    --good: #1b7f4b;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--bg); }
+  body {
+    font-family: Inter, "Liberation Sans", sans-serif;
+    color: var(--ink);
+    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+  }
+  .poster {
+    width: 841mm; height: 1189mm; overflow: hidden;
+    display: flex; flex-direction: column;
+    background: var(--bg);
+  }
+
+  /* ---------- header ---------- */
+  header {
+    background: var(--navy);
+    color: #fff;
+    padding: 66px 100px 60px;
+    display: grid;
+    grid-template-columns: 1fr 330px;
+    gap: 80px;
+    align-items: center;
+  }
+  .venue {
+    display: inline-block;
+    font-size: 34px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
+    color: #bcd6f7;
+    margin-bottom: 26px;
+  }
+  h1 {
+    font-family: "Inter Display", Inter, sans-serif;
+    font-size: 136px; line-height: 1.0; font-weight: 800; letter-spacing: -0.025em;
+  }
+  .subtitle {
+    font-size: 60px; line-height: 1.18; font-weight: 500; color: #dbe7f8;
+    margin-top: 26px; max-width: 2500px;
+  }
+  .authors { margin-top: 36px; font-size: 44px; font-weight: 600; }
+  .authors .aff { font-weight: 400; color: #bcd6f7; margin-left: 24px; }
+  .qr-box { background: #fff; border-radius: 28px; padding: 30px 30px 22px; text-align: center; }
+  .qr-box .qr { width: 270px; height: 270px; margin: 0 auto; }
+  .qr-box .qr-cap { color: var(--ink); font-size: 26px; font-weight: 600; margin-top: 16px; line-height: 1.25; }
+  .qr-box .qr-cap span { display: block; color: var(--muted); font-weight: 500; font-size: 22px; }
+
+  /* ---------- TL;DR band ---------- */
+  .tldr {
+    background: #fff;
+    border-bottom: 2px solid var(--line);
+    padding: 50px 100px 54px;
+    display: grid; grid-template-columns: 1.3fr 1.7fr; gap: 80px; align-items: center;
+  }
+  .tldr p { font-size: 43px; line-height: 1.32; color: var(--ink); }
+  .tldr p b { font-weight: 700; }
+  .tldr .hl { background: linear-gradient(transparent 58%, #fbe3a8 58%); }
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 36px; }
+  .stat {
+    border-left: 8px solid var(--accent);
+    padding: 8px 0 8px 32px;
+  }
+  .stat .v, .lg-val, .callout .big {
+    font-feature-settings: "tnum" 1;
+  }
+  .stat .v {
+    font-size: 92px; font-weight: 700; letter-spacing: -0.03em; line-height: 1; color: var(--navy);
+  }
+  .stat .v small { font-size: 64px; font-weight: 700; }
+  .stat .k { font-size: 31px; line-height: 1.3; color: var(--ink2); margin-top: 20px; }
+  .stat .k b { color: var(--ink); }
+
+  /* ---------- body columns ---------- */
+  main {
+    flex: 1;
+    padding: 50px 100px 0;
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 56px;
+    min-height: 0;
+  }
+  .col { display: flex; flex-direction: column; gap: 40px; min-height: 0; }
+  .card {
+    background: var(--card);
+    border-radius: 28px;
+    padding: 42px 48px 44px;
+    box-shadow: 0 0 0 2px var(--line);
+  }
+  .card.grow { flex: 1; }
+  h2 {
+    font-size: 54px; font-weight: 700; letter-spacing: -0.015em; line-height: 1.12;
+    display: flex; align-items: baseline; gap: 22px;
+    margin-bottom: 20px;
+  }
+  h2 .n {
+    flex: none;
+    width: 66px; height: 66px; border-radius: 50%;
+    background: var(--navy); color: #fff;
+    font-size: 36px; font-weight: 700;
+    display: inline-flex; align-items: center; justify-content: center;
+    transform: translateY(-6px);
+  }
+  h3 { font-size: 37px; font-weight: 700; margin: 28px 0 10px; }
+  p, li { font-size: 34px; line-height: 1.42; color: var(--ink2); }
+  p b, li b { color: var(--ink); font-weight: 650; }
+  p + p { margin-top: 18px; }
+  ul { padding-left: 0; list-style: none; }
+  li { position: relative; padding-left: 40px; }
+  li + li { margin-top: 14px; }
+  li::before {
+    content: ""; position: absolute; left: 4px; top: 0.62em;
+    width: 14px; height: 14px; border-radius: 50%; background: var(--accent);
+  }
+  .figure { margin-top: 22px; }
+  .figure svg { width: 100%; height: auto; display: block; }
+  .cap { font-size: 27px; line-height: 1.38; color: var(--muted); margin-top: 18px; }
+  .cap b { color: var(--ink2); }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 14px 38px; margin-top: 18px; }
+  .legend span { display: inline-flex; align-items: center; gap: 14px; font-size: 28px; color: var(--ink2); }
+  .legend i { display: inline-block; width: 30px; height: 30px; border-radius: 6px; }
+  .legend i.ln { height: 8px; border-radius: 4px; width: 46px; }
+
+  .lg-table { margin-top: 10px; }
+  .lg-row { display: grid; grid-template-columns: 52px 1fr auto; align-items: center; gap: 18px; padding: 8px 0; border-bottom: 2px solid #f0f0ed; }
+  .lg-row:last-child { border-bottom: 0; }
+  .lg-line { height: 8px; border-radius: 4px; display: block; }
+  .lg-name { font-size: 29px; color: var(--ink2); }
+  .lg-val { font-size: 30px; font-weight: 700; color: var(--ink); }
+  .lg-head { display: flex; justify-content: space-between; font-size: 24px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 22px; }
+
+  /* example card */
+  .example { margin-top: 26px; border-radius: 22px; background: #f7f7f4; padding: 32px 36px; }
+  .example .q { font-size: 33px; line-height: 1.35; color: var(--ink); font-weight: 600; }
+  .example .meta { font-size: 26px; color: var(--muted); margin-top: 10px; }
+  .resp { display: grid; grid-template-columns: 58px 1fr; gap: 20px; margin-top: 26px; align-items: start; }
+  .resp .ic {
+    width: 58px; height: 58px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 34px; font-weight: 800; color: #fff;
+  }
+  .resp .who { font-size: 25px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+  .resp .say { font-size: 31px; line-height: 1.36; color: var(--ink); margin-top: 6px; font-style: italic; }
+  .resp.bad .ic { background: var(--wrong); }
+  .resp.bad .who { color: var(--wrong); }
+  .resp.ok .ic { background: var(--accent); }
+  .resp.ok .who { color: var(--accent); }
+
+  /* steps */
+  .steps { counter-reset: s; margin-top: 30px; }
+  .step { display: grid; grid-template-columns: 62px 1fr; gap: 22px; }
+  .step + .step { margin-top: 26px; }
+  .step .sn {
+    width: 54px; height: 54px; border-radius: 14px; background: var(--accent-soft); color: var(--navy2);
+    font-size: 30px; font-weight: 800; display: flex; align-items: center; justify-content: center;
+  }
+  .step p { font-size: 32px; }
+  .metric {
+    margin-top: 32px; padding: 26px 32px; border-radius: 18px;
+    background: var(--accent-soft); color: var(--navy);
+    font-size: 31px; line-height: 1.4;
+  }
+  .metric b { color: var(--navy); }
+
+  .callouts { display: grid; grid-template-columns: 1fr 1fr; gap: 26px; margin-top: 30px; }
+  .callout { background: #f7f7f4; border-radius: 20px; padding: 26px 30px; }
+  .callout .big { font-size: 60px; font-weight: 750; color: var(--navy); letter-spacing: -0.02em; line-height: 1.05; }
+  .callout .small { font-size: 27px; color: var(--ink2); line-height: 1.35; margin-top: 10px; }
+
+  .gen { display: grid; grid-template-columns: 1fr 1fr; gap: 26px; margin-top: 26px; }
+
+  .take {
+    background: var(--navy); color: #fff;
+    border-radius: 28px; padding: 50px 52px;
+    box-shadow: none;
+  }
+  .take h2 { color: #fff; }
+  .take h2 .n { background: #fff; color: var(--navy); }
+  .take p { color: #dbe7f8; font-size: 40px; line-height: 1.38; }
+  .take p b { color: #fff; }
+
+  .limits li { font-size: 30px; }
+  .limits li::before { background: var(--muted); }
+
+  footer {
+    padding: 34px 100px 46px;
+    display: flex; justify-content: space-between; align-items: flex-end; gap: 60px;
+    font-size: 23px; color: var(--muted); line-height: 1.4;
+  }
+  footer b { color: var(--ink2); }
+</style>
+</head>
+<body>
+<div class="poster">
+
+<header>
+  <div>
+    <div class="venue">GroundLM Workshop &middot; EMNLP 2026</div>
+    <h1>Compression-Aware Abstention</h1>
+    <div class="subtitle">Teaching LLMs to refuse when KV-compression masks remove answer evidence</div>
+    <div class="authors">Mohammadali Khodabandehlou &nbsp;&middot;&nbsp; Bhaskar Krishnamachari<span class="aff">University of Southern California</span></div>
+  </div>
+  <div class="qr-box">
+    <div class="qr"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 33 33" width="100%" height="100%" shape-rendering="crispEdges" class="segno"><path class="qrline" stroke="#111827" d="M0 0.5h7m5 0h4m1 0h3m1 0h3m2 0h7m-33 1h1m5 0h1m2 0h2m1 0h4m1 0h1m2 0h2m1 0h2m1 0h1m5 0h1m-33 1h1m1 0h3m1 0h1m3 0h2m1 0h1m1 0h1m1 0h1m5 0h1m2 0h1m1 0h3m1 0h1m-33 1h1m1 0h3m1 0h1m2 0h2m2 0h2m1 0h1m1 0h2m2 0h2m2 0h1m1 0h3m1 0h1m-33 1h1m1 0h3m1 0h1m2 0h3m2 0h1m2 0h2m4 0h2m1 0h1m1 0h3m1 0h1m-33 1h1m5 0h1m1 0h1m2 0h3m1 0h2m1 0h3m3 0h1m1 0h1m5 0h1m-33 1h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7m-24 1h1m2 0h1m1 0h4m2 0h5m-25 1h1m2 0h1m1 0h2m1 0h1m1 0h2m1 0h2m1 0h1m4 0h3m1 0h1m1 0h1m-28 1h3m7 0h2m1 0h2m1 0h1m3 0h2m2 0h4m4 0h1m-33 1h1m5 0h1m1 0h1m1 0h2m1 0h2m1 0h2m1 0h1m4 0h1m2 0h2m1 0h1m1 0h1m-32 1h3m3 0h1m1 0h1m3 0h1m4 0h2m1 0h2m3 0h1m1 0h2m2 0h1m-33 1h3m1 0h1m1 0h1m2 0h1m4 0h1m1 0h2m1 0h1m1 0h1m1 0h4m2 0h1m1 0h2m-33 1h2m1 0h2m2 0h4m3 0h2m3 0h2m1 0h1m1 0h1m1 0h4m1 0h2m-33 1h1m3 0h1m1 0h1m1 0h1m3 0h7m2 0h1m1 0h4m4 0h1m-31 1h2m4 0h4m2 0h1m2 0h3m1 0h2m4 0h1m1 0h1m2 0h1m-31 1h2m1 0h3m4 0h2m2 0h1m1 0h2m1 0h3m1 0h1m1 0h1m1 0h2m1 0h1m-31 1h2m1 0h1m4 0h4m1 0h1m1 0h2m3 0h1m1 0h3m1 0h1m1 0h1m1 0h1m-30 1h1m3 0h1m1 0h4m1 0h2m2 0h1m3 0h2m1 0h1m1 0h1m3 0h3m-33 1h1m1 0h2m3 0h1m1 0h6m2 0h1m1 0h7m1 0h1m4 0h1m-33 1h2m2 0h1m1 0h2m1 0h2m1 0h1m2 0h1m1 0h3m1 0h1m1 0h1m1 0h1m-25 1h2m4 0h2m1 0h1m3 0h2m4 0h3m1 0h1m1 0h1m2 0h1m1 0h2m-33 1h7m1 0h1m3 0h1m1 0h1m1 0h1m2 0h1m1 0h1m4 0h4m2 0h1m-32 1h3m1 0h1m1 0h4m1 0h4m2 0h2m1 0h2m5 0h2m-30 1h1m1 0h1m3 0h1m3 0h4m2 0h2m2 0h2m2 0h5m2 0h2m-25 1h1m2 0h4m1 0h2m1 0h1m1 0h2m1 0h1m3 0h2m1 0h2m-33 1h7m2 0h2m1 0h1m1 0h1m1 0h3m1 0h3m1 0h1m1 0h1m1 0h4m-32 1h1m5 0h1m1 0h2m1 0h5m1 0h1m1 0h4m1 0h1m3 0h1m2 0h1m-32 1h1m1 0h3m1 0h1m4 0h1m3 0h1m2 0h1m1 0h3m1 0h6m1 0h2m-33 1h1m1 0h3m1 0h1m1 0h1m1 0h1m1 0h2m1 0h3m4 0h2m2 0h1m1 0h1m1 0h1m-31 1h1m1 0h3m1 0h1m2 0h1m1 0h1m2 0h5m1 0h2m6 0h3m1 0h1m-33 1h1m5 0h1m5 0h3m2 0h2m1 0h2m1 0h3m-26 1h7m1 0h1m3 0h5m4 0h1m2 0h3m1 0h2m1 0h1"/></svg>
+</div>
+    <div class="qr-cap">Code, data &amp; adapters<span>github.com/mali-kh/<br>compression-aware-abstention</span></div>
+  </div>
+</header>
+
+<section class="tldr">
+  <p>KV-cache compression can silently evict the evidence a question depends on. The model then <b>answers anyway &mdash; fluently and wrongly.</b> We train a <span class="hl"><b>10M-parameter LoRA adapter</b> that answers when the evidence survives compression and refuses when it does not.</span></p>
+  <div class="stats">
+    <div class="stat"><div class="v">97%</div><div class="k"><b>fewer hallucinations</b><br>232 &rarr; 7 on KVzip-compressed MuSiQue</div></div>
+    <div class="stat"><div class="v">.32<small>&rarr;</small>.86</div><div class="k"><b>honest accuracy</b><br>base &rarr; ours, mean of 3 seeds</div></div>
+    <div class="stat"><div class="v">6&ndash;22<small>&times;</small></div><div class="k"><b>more correct answers</b> under real compressed-cache decoding</div></div>
+    <div class="stat"><div class="v">96%</div><div class="k"><b>hallucination drop</b> replicates on Llama-3.1-8B (228 &rarr; 10)</div></div>
+  </div>
+</section>
+
+<main>
+  <!-- ================= column 1 ================= -->
+  <div class="col">
+    <div class="card">
+      <h2><span class="n">1</span>Compression removes evidence. Models don&rsquo;t notice.</h2>
+      <p>KV compressors (KVzip, SnapKV, Expected Attention) evict context tokens to save memory. When the evicted tokens carry the answer evidence, the remaining context is still <b>fluent and on-topic, but no longer determines the answer</b>, and the model fabricates one.</p>
+      <div class="example">
+        <div class="q">&ldquo;Who founded the company that distributed the film <i>UHF</i>?&rdquo;</div>
+        <div class="meta">Gold: Mike Medavoy &middot; KVzip at r = 0.30 evicted the supporting tokens</div>
+        <div class="resp bad">
+          <div class="ic">&#x2715;</div>
+          <div><div class="who">Base Qwen2.5-7B-Instruct &middot; hallucinates</div>
+          <div class="say">&ldquo;Kevin Smith founded the distribution company that released the film UHF.&rdquo;</div></div>
+        </div>
+        <div class="resp ok">
+          <div class="ic">&#x2713;</div>
+          <div><div class="who">+ our adapter &middot; abstains</div>
+          <div class="say">&ldquo;I cannot determine the answer to this question from the available context.&rdquo;</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2><span class="n">2</span>Label by evidence survival, then train</h2>
+      <div class="figure"><svg viewBox="0 0 940 430" width="940" height="430" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Labeling from compression masks">
+<rect x="0" y="6" width="26" height="34" rx="5" fill="#3a3d44"/>
+<text x="38.0" y="33.0" font-size="23" fill="#4a4c52" text-anchor="start" font-weight="400" font-family="Inter, 'Liberation Sans', sans-serif" >kept</text>
+<rect x="110" y="6" width="26" height="34" rx="5" fill="none" stroke="#b9bab5" stroke-width="2.5" stroke-dasharray="5 4"/>
+<text x="148.0" y="33.0" font-size="23" fill="#4a4c52" text-anchor="start" font-weight="400" font-family="Inter, 'Liberation Sans', sans-serif" >evicted</text>
+<rect x="260" y="6" width="26" height="34" rx="5" fill="#eda100"/>
+<text x="298.0" y="33.0" font-size="23" fill="#4a4c52" text-anchor="start" font-weight="400" font-family="Inter, 'Liberation Sans', sans-serif" >answer-evidence span (median 3 tokens)</text>
+<text x="0.0" y="92.0" font-size="28" fill="#14161a" text-anchor="start" font-weight="700" font-family="Inter, 'Liberation Sans', sans-serif" >Evidence survives</text>
+<text x="0.0" y="126.0" font-size="23" fill="#7b7d84" text-anchor="start" font-weight="400" font-family="Inter, 'Liberation Sans', sans-serif" >every span keeps ≥ 80% of its tokens</text>
+<rect x="0" y="150" width="29" height="46" rx="6" fill="#3a3d44"/>
+<rect x="36.5" y="151.5" width="26" height="43" rx="6" fill="none" stroke="#b9bab5" stroke-width="2.5" stroke-dasharray="5 4"/>
+<rect x="70" y="150" width="29" height="46" rx="6" fill="#3a3d44"/>
+<rect x="105" y="150" width="29" height="46" rx="6" fill="#3a3d44"/>
+<rect x="141.5" y="151.5" width="26" height="43" rx="6" fill="none" stroke="#b9bab5" stroke-width="2.5" stroke-dasharray="5 4"/>
+<rect x="176.5" y="151.5" width="26" height="43" rx="6" fill="none" stroke="#b9bab5" stroke-width="2.5" stroke-dasharray="5 4"/>
+<rect x="210" y="150" width="29" height="46" rx="6" fill="#3a3d44"/>
+<rect x="245" y="150" width="29" height="46" rx="6" fill="#eda100"/>
+<rect x="280" y="150" width="29" height="46" rx="6" fill="#eda100"/>
+<rect x="315" y="150" width="29" height="46" rx="6" fill="#eda100"/>
+<rect x="351.5" y="151.5" width="26" height="43" rx="6" fill="none" stroke="#b9bab5" stroke-width="2.5" stroke-dasharray="5 4"/>
+<rect x="385" y="150" width="29" height="46" rx="6" fill="#3a3d44"/>
+<rect x="421.5" y="151.5" width="26" height="43" rx="6" fill="none" stroke="#b9bab5" stroke-width="2.5" stroke-dasharray="5 4"/>
+<rect x="456.5" y="151.5" width="26" height="43" rx="6" fill="none" stroke="#b9bab5" stroke-width="2.5" stroke-dasharray="5 4"/>
+<rect x="490" y="150" width="29" height="46" rx="6" fill="#3a3d44"/>
+<rect x="525" y="150" width="29" height="46" rx="6" fill="#3a3d44"/>
+<line x1="566" x2="612" y1="173" y2="173" stroke="#4a4c52" stroke-width="4"/>
+<path d="M612,161 L632,173 L612,185 Z" fill="#4a4c52"/>
+<rect x="646" y="144" width="294" height="58" rx="29" fill="#2a78d6"/>
+<text x="793.0" y="182.0" font-size="26" fill="#ffffff" text-anchor="middle" font-weight="700" font-family="Inter, 'Liberation Sans', sans-serif" >CONFIDENT</text>
+<text x="940.0" y="240.0" font-size="24" fill="#4a4c52" text-anchor="end" font-weight="500" font-family="Inter, 'Liberation Sans', sans-serif" >answer: “Mike Medavoy”</text>
+<text x="0.0" y="264.0" font-size="28" fill="#14161a" text-anchor="start" font-weight="700" font-family="Inter, 'Liberation Sans', sans-serif" >Evidence evicted</text>
+<text x="0.0" y="298.0" font-size="23" fill="#7b7d84" text-anchor="start" font-weight="400" font-family="Inter, 'Liberation Sans', sans-serif" >some span keeps &lt; 30% of its tokens</text>
+<rect x="0" y="322" width="29" height="46" rx="6" fill="#3a3d44"/>
+<rect x="35" y="322" width="29" height="46" rx="6" fill="#3a3d44"/>
+<rect x="71.5" y="323.5" width="26" height="43" rx="6" fill="none" stroke="#b9bab5" stroke-width="2.5" stroke-dasharray="5 4"/>
+<rect x="105" y="322" width="29" height="46" rx="6" fill="#3a3d44"/>
+<rect x="140" y="322" width="29" height="46" rx="6" fill="#3a3d44"/>
+<rect x="176.5" y="323.5" width="26" height="43" rx="6" fill="none" stroke="#b9bab5" stroke-width="2.5" stroke-dasharray="5 4"/>
+<rect x="210" y="322" width="29" height="46" rx="6" fill="#3a3d44"/>
+<rect x="246.5" y="323.5" width="26" height="43" rx="6" fill="#fdf3dc" stroke="#eda100" stroke-width="3" stroke-dasharray="6 4"/>
+<rect x="281.5" y="323.5" width="26" height="43" rx="6" fill="#fdf3dc" stroke="#eda100" stroke-width="3" stroke-dasharray="6 4"/>
+<rect x="316.5" y="323.5" width="26" height="43" rx="6" fill="#fdf3dc" stroke="#eda100" stroke-width="3" stroke-dasharray="6 4"/>
+<rect x="350" y="322" width="29" height="46" rx="6" fill="#3a3d44"/>
+<rect x="385" y="322" width="29" height="46" rx="6" fill="#3a3d44"/>
+<rect x="421.5" y="323.5" width="26" height="43" rx="6" fill="none" stroke="#b9bab5" stroke-width="2.5" stroke-dasharray="5 4"/>
+<rect x="455" y="322" width="29" height="46" rx="6" fill="#3a3d44"/>
+<rect x="491.5" y="323.5" width="26" height="43" rx="6" fill="none" stroke="#b9bab5" stroke-width="2.5" stroke-dasharray="5 4"/>
+<rect x="525" y="322" width="29" height="46" rx="6" fill="#3a3d44"/>
+<line x1="566" x2="612" y1="345" y2="345" stroke="#4a4c52" stroke-width="4"/>
+<path d="M612,333 L632,345 L612,357 Z" fill="#4a4c52"/>
+<rect x="646" y="316" width="294" height="58" rx="29" fill="#14161a"/>
+<text x="793.0" y="354.0" font-size="26" fill="#ffffff" text-anchor="middle" font-weight="700" font-family="Inter, 'Liberation Sans', sans-serif" >ABSTAIN</text>
+<text x="940.0" y="412.0" font-size="24" fill="#4a4c52" text-anchor="end" font-weight="500" font-family="Inter, 'Liberation Sans', sans-serif" >refuse: “I cannot determine…”</text>
+</svg></div>
+      <div class="steps">
+        <div class="step"><div class="sn">1</div><p><b>Tight-span localization.</b> MuSiQue 2-hop decompositions give each sub-answer as a short string; we locate it verbatim in its supporting paragraph (median <b>3 tokens</b>). Paragraph-level spans (~100 tokens) average out under compression and give zero label variance.</p></div>
+        <div class="step"><div class="sn">2</div><p><b>Label from the mask.</b> Run a compressor at retention r &isin; {0.05 &hellip; 0.80}. <b>CONFIDENT</b> if every span keeps &ge; 80% of its tokens, <b>ABSTAIN</b> if any span keeps &lt; 30%, otherwise dropped.</p></div>
+        <div class="step"><div class="sn">3</div><p><b>Train.</b> Rank-16 LoRA (10.1M params, attention only) on frozen Qwen2.5-7B-Instruct: emit the gold answer on CONFIDENT, a fixed refusal on ABSTAIN.</p></div>
+      </div>
+      <div class="metric"><b>Honest accuracy</b> = answer correctly when the evidence survived <b>+</b> refuse when it was evicted. Both directions count, so over-refusing is penalized as much as hallucinating.</div>
+    </div>
+
+    <div class="card take grow">
+      <h2><span class="n">&#x2192;</span>Takeaway</h2>
+      <p><b>Compressed models should know when they no longer know.</b> A small adapter, trained on labels read off the compressor&rsquo;s own survival mask, turns silent evidence loss into an explicit refusal.</p>
+    </div>
+  </div>
+
+  <!-- ================= column 2 ================= -->
+  <div class="col">
+    <div class="card">
+      <h2><span class="n">3</span>Hallucinations collapse</h2>
+      <p>Honest accuracy on KVzip-compressed contexts, by retention ratio. The adapter refuses almost perfectly when evidence is gone and still answers when it survives.</p>
+      <div class="figure"><svg viewBox="0 0 940 560" width="940" height="560" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Honest accuracy by retention ratio">
+<line x1="175" x2="765" y1="420.0" y2="420.0" stroke="#e4e4e0" stroke-width="2"/>
+<text x="157.0" y="430.0" font-size="26" fill="#7b7d84" text-anchor="end" font-weight="400" font-family="Inter, 'Liberation Sans', sans-serif" >0</text>
+<line x1="175" x2="765" y1="326.5" y2="326.5" stroke="#e4e4e0" stroke-width="2"/>
+<text x="157.0" y="336.5" font-size="26" fill="#7b7d84" text-anchor="end" font-weight="400" font-family="Inter, 'Liberation Sans', sans-serif" >0.25</text>
+<line x1="175" x2="765" y1="233.0" y2="233.0" stroke="#e4e4e0" stroke-width="2"/>
+<text x="157.0" y="243.0" font-size="26" fill="#7b7d84" text-anchor="end" font-weight="400" font-family="Inter, 'Liberation Sans', sans-serif" >0.5</text>
+<line x1="175" x2="765" y1="139.5" y2="139.5" stroke="#e4e4e0" stroke-width="2"/>
+<text x="157.0" y="149.5" font-size="26" fill="#7b7d84" text-anchor="end" font-weight="400" font-family="Inter, 'Liberation Sans', sans-serif" >0.75</text>
+<line x1="175" x2="765" y1="46.0" y2="46.0" stroke="#e4e4e0" stroke-width="2"/>
+<text x="157.0" y="56.0" font-size="26" fill="#7b7d84" text-anchor="end" font-weight="400" font-family="Inter, 'Liberation Sans', sans-serif" >1</text>
+<text x="175.0" y="464.0" font-size="28" fill="#4a4c52" text-anchor="middle" font-weight="400" font-family="Inter, 'Liberation Sans', sans-serif" >0.05</text>
+<text x="175.0" y="518.0" font-size="26" fill="#7b7d84" text-anchor="middle" font-weight="400" font-family="Inter, 'Liberation Sans', sans-serif" >0%</text>
+<text x="293.0" y="464.0" font-size="28" fill="#4a4c52" text-anchor="middle" font-weight="400" font-family="Inter, 'Liberation Sans', sans-serif" >0.10</text>
+<text x="293.0" y="518.0" font-size="26" fill="#7b7d84" text-anchor="middle" font-weight="400" font-family="Inter, 'Liberation Sans', sans-serif" >1%</text>
+<text x="411.0" y="464.0" font-size="28" fill="#4a4c52" text-anchor="middle" font-weight="400" font-family="Inter, 'Liberation Sans', sans-serif" >0.20</text>
+<text x="411.0" y="518.0" font-size="26" fill="#7b7d84" text-anchor="middle" font-weight="400" font-family="Inter, 'Liberation Sans', sans-serif" >2%</text>
+<text x="529.0" y="464.0" font-size="28" fill="#4a4c52" text-anchor="middle" font-weight="400" font-family="Inter, 'Liberation Sans', sans-serif" >0.30</text>
+<text x="529.0" y="518.0" font-size="26" fill="#7b7d84" text-anchor="middle" font-weight="400" font-family="Inter, 'Liberation Sans', sans-serif" >5%</text>
+<text x="647.0" y="464.0" font-size="28" fill="#4a4c52" text-anchor="middle" font-weight="400" font-family="Inter, 'Liberation Sans', sans-serif" >0.50</text>
+<text x="647.0" y="518.0" font-size="26" fill="#7b7d84" text-anchor="middle" font-weight="400" font-family="Inter, 'Liberation Sans', sans-serif" >46%</text>
+<text x="765.0" y="464.0" font-size="28" fill="#4a4c52" text-anchor="middle" font-weight="400" font-family="Inter, 'Liberation Sans', sans-serif" >0.80</text>
+<text x="765.0" y="518.0" font-size="26" fill="#7b7d84" text-anchor="middle" font-weight="400" font-family="Inter, 'Liberation Sans', sans-serif" >95%</text>
+<text x="0.0" y="518.0" font-size="23" fill="#7b7d84" text-anchor="start" font-weight="400" font-family="Inter, 'Liberation Sans', sans-serif" >answerable:</text>
+<text x="470.0" y="556.0" font-size="26" fill="#4a4c52" text-anchor="middle" font-weight="400" font-family="Inter, 'Liberation Sans', sans-serif" >KV retention ratio r  (fraction of context kept)</text>
+<polyline points="175.0,363.9 293.0,319.0 411.0,307.8 529.0,289.1 647.0,255.4 765.0,229.3" fill="none" stroke="#8f8e88" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="175.0" cy="363.9" r="11" fill="#8f8e88" stroke="#ffffff" stroke-width="4"/>
+<circle cx="293.0" cy="319.0" r="11" fill="#8f8e88" stroke="#ffffff" stroke-width="4"/>
+<circle cx="411.0" cy="307.8" r="11" fill="#8f8e88" stroke="#ffffff" stroke-width="4"/>
+<circle cx="529.0" cy="289.1" r="11" fill="#8f8e88" stroke="#ffffff" stroke-width="4"/>
+<circle cx="647.0" cy="255.4" r="11" fill="#8f8e88" stroke="#ffffff" stroke-width="4"/>
+<circle cx="765.0" cy="229.3" r="11" fill="#8f8e88" stroke="#ffffff" stroke-width="4"/>
+<text x="789.0" y="239.3" font-size="28" fill="#14161a" text-anchor="start" font-weight="600" font-family="Inter, 'Liberation Sans', sans-serif" >Base 0.51</text>
+<polyline points="175.0,46.0 293.0,49.7 411.0,75.9 529.0,124.5 647.0,173.2 765.0,195.6" fill="none" stroke="#2a78d6" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="175.0" cy="46.0" r="11" fill="#2a78d6" stroke="#ffffff" stroke-width="4"/>
+<circle cx="293.0" cy="49.7" r="11" fill="#2a78d6" stroke="#ffffff" stroke-width="4"/>
+<circle cx="411.0" cy="75.9" r="11" fill="#2a78d6" stroke="#ffffff" stroke-width="4"/>
+<circle cx="529.0" cy="124.5" r="11" fill="#2a78d6" stroke="#ffffff" stroke-width="4"/>
+<circle cx="647.0" cy="173.2" r="11" fill="#2a78d6" stroke="#ffffff" stroke-width="4"/>
+<circle cx="765.0" cy="195.6" r="11" fill="#2a78d6" stroke="#ffffff" stroke-width="4"/>
+<text x="789.0" y="205.6" font-size="28" fill="#14161a" text-anchor="start" font-weight="600" font-family="Inter, 'Liberation Sans', sans-serif" >Ours 0.60</text>
+<text x="195.0" y="24.0" font-size="26" fill="#4a4c52" text-anchor="start" font-weight="600" font-family="Inter, 'Liberation Sans', sans-serif" >1.00</text>
+<text x="195.0" y="403.9" font-size="26" fill="#4a4c52" text-anchor="start" font-weight="600" font-family="Inter, 'Liberation Sans', sans-serif" >0.15</text>
+</svg></div>
+      <div class="cap">MuSiQue 2-hop validation, n = 463 (97 CONFIDENT / 366 ABSTAIN). &ldquo;Answerable&rdquo; = share of CONFIDENT examples at each ratio. Ours = mean of seeds 42/43/44.</div>
+      <div class="callouts">
+        <div class="callout"><div class="big">232 &rarr; 7</div><div class="small">hallucinated answers, base vs. adapter (seed 42)</div></div>
+        <div class="callout"><div class="big">1.00&ndash;1.36&times;</div><div class="small">the base model&rsquo;s correct answers on answerable questions: safety without blanket refusal</div></div>
+      </div>
+    </div>
+
+    <div class="card grow">
+      <h2><span class="n">4</span>Beats prompting; mixture training transfers across compressors</h2>
+      <p>At <b>r = 0.50</b> about half the examples are answerable, so a rule based on r alone cannot help: the model has to use what survived.</p>
+      <div class="figure"><svg viewBox="0 0 940 520" width="940" height="520" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Honest accuracy at r=0.50 across compressors">
+<line x1="80" x2="930" y1="410.0" y2="410.0" stroke="#e4e4e0" stroke-width="2"/>
+<text x="64.0" y="419.0" font-size="26" fill="#7b7d84" text-anchor="end" font-weight="400" font-family="Inter, 'Liberation Sans', sans-serif" >0</text>
+<line x1="80" x2="930" y1="317.5" y2="317.5" stroke="#e4e4e0" stroke-width="2"/>
+<text x="64.0" y="326.5" font-size="26" fill="#7b7d84" text-anchor="end" font-weight="400" font-family="Inter, 'Liberation Sans', sans-serif" >0.2</text>
+<line x1="80" x2="930" y1="225.0" y2="225.0" stroke="#e4e4e0" stroke-width="2"/>
+<text x="64.0" y="234.0" font-size="26" fill="#7b7d84" text-anchor="end" font-weight="400" font-family="Inter, 'Liberation Sans', sans-serif" >0.4</text>
+<line x1="80" x2="930" y1="132.5" y2="132.5" stroke="#e4e4e0" stroke-width="2"/>
+<text x="64.0" y="141.5" font-size="26" fill="#7b7d84" text-anchor="end" font-weight="400" font-family="Inter, 'Liberation Sans', sans-serif" >0.6</text>
+<line x1="80" x2="930" y1="40.0" y2="40.0" stroke="#e4e4e0" stroke-width="2"/>
+<text x="64.0" y="49.0" font-size="26" fill="#7b7d84" text-anchor="end" font-weight="400" font-family="Inter, 'Liberation Sans', sans-serif" >0.8</text>
+<path d="M97.2,410.0 L97.2,214.5 Q97.2,206.5 105.2,206.5 L129.2,206.5 Q137.2,206.5 137.2,214.5 L137.2,410.0 Z" fill="#8f8e88"/>
+<text x="117.2" y="194.5" font-size="23" fill="#4a4c52" text-anchor="middle" font-weight="500" font-family="Inter, 'Liberation Sans', sans-serif" >.44</text>
+<path d="M143.2,410.0 L143.2,168.2 Q143.2,160.2 151.2,160.2 L175.2,160.2 Q183.2,160.2 183.2,168.2 L183.2,410.0 Z" fill="#eb6834"/>
+<text x="163.2" y="148.2" font-size="23" fill="#4a4c52" text-anchor="middle" font-weight="500" font-family="Inter, 'Liberation Sans', sans-serif" >.54</text>
+<path d="M189.2,410.0 L189.2,117.4 Q189.2,109.4 197.2,109.4 L221.2,109.4 Q229.2,109.4 229.2,117.4 L229.2,410.0 Z" fill="#86b6ef"/>
+<text x="209.2" y="97.4" font-size="23" fill="#4a4c52" text-anchor="middle" font-weight="500" font-family="Inter, 'Liberation Sans', sans-serif" >.65</text>
+<path d="M235.2,410.0 L235.2,98.9 Q235.2,90.9 243.2,90.9 L267.2,90.9 Q275.2,90.9 275.2,98.9 L275.2,410.0 Z" fill="#2a78d6"/>
+<text x="255.2" y="78.9" font-size="23" fill="#14161a" text-anchor="middle" font-weight="700" font-family="Inter, 'Liberation Sans', sans-serif" >.69</text>
+<text x="186.2" y="452.0" font-size="27" fill="#4a4c52" text-anchor="middle" font-weight="600" font-family="Inter, 'Liberation Sans', sans-serif" >KVzip</text>
+<path d="M309.8,410.0 L309.8,242.2 Q309.8,234.2 317.8,234.2 L341.8,234.2 Q349.8,234.2 349.8,242.2 L349.8,410.0 Z" fill="#8f8e88"/>
+<text x="329.8" y="222.2" font-size="23" fill="#4a4c52" text-anchor="middle" font-weight="500" font-family="Inter, 'Liberation Sans', sans-serif" >.38</text>
+<path d="M355.8,410.0 L355.8,140.5 Q355.8,132.5 363.8,132.5 L387.8,132.5 Q395.8,132.5 395.8,140.5 L395.8,410.0 Z" fill="#eb6834"/>
+<text x="375.8" y="120.5" font-size="23" fill="#4a4c52" text-anchor="middle" font-weight="500" font-family="Inter, 'Liberation Sans', sans-serif" >.60</text>
+<path d="M401.8,410.0 L401.8,108.1 Q401.8,100.1 409.8,100.1 L433.8,100.1 Q441.8,100.1 441.8,108.1 L441.8,410.0 Z" fill="#86b6ef"/>
+<text x="421.8" y="88.1" font-size="23" fill="#4a4c52" text-anchor="middle" font-weight="500" font-family="Inter, 'Liberation Sans', sans-serif" >.67</text>
+<path d="M447.8,410.0 L447.8,89.6 Q447.8,81.6 455.8,81.6 L479.8,81.6 Q487.8,81.6 487.8,89.6 L487.8,410.0 Z" fill="#2a78d6"/>
+<text x="467.8" y="69.6" font-size="23" fill="#14161a" text-anchor="middle" font-weight="700" font-family="Inter, 'Liberation Sans', sans-serif" >.71</text>
+<text x="398.8" y="452.0" font-size="27" fill="#4a4c52" text-anchor="middle" font-weight="600" font-family="Inter, 'Liberation Sans', sans-serif" >Exp. Attention</text>
+<path d="M522.2,410.0 L522.2,265.4 Q522.2,257.4 530.2,257.4 L554.2,257.4 Q562.2,257.4 562.2,265.4 L562.2,410.0 Z" fill="#8f8e88"/>
+<text x="542.2" y="245.4" font-size="23" fill="#4a4c52" text-anchor="middle" font-weight="500" font-family="Inter, 'Liberation Sans', sans-serif" >.33</text>
+<path d="M568.2,410.0 L568.2,122.0 Q568.2,114.0 576.2,114.0 L600.2,114.0 Q608.2,114.0 608.2,122.0 L608.2,410.0 Z" fill="#eb6834"/>
+<text x="588.2" y="102.0" font-size="23" fill="#4a4c52" text-anchor="middle" font-weight="500" font-family="Inter, 'Liberation Sans', sans-serif" >.64</text>
+<path d="M614.2,410.0 L614.2,205.3 Q614.2,197.3 622.2,197.3 L646.2,197.3 Q654.2,197.3 654.2,205.3 L654.2,410.0 Z" fill="#86b6ef"/>
+<text x="634.2" y="185.3" font-size="23" fill="#4a4c52" text-anchor="middle" font-weight="500" font-family="Inter, 'Liberation Sans', sans-serif" >.46</text>
+<path d="M660.2,410.0 L660.2,122.0 Q660.2,114.0 668.2,114.0 L692.2,114.0 Q700.2,114.0 700.2,122.0 L700.2,410.0 Z" fill="#2a78d6"/>
+<text x="680.2" y="102.0" font-size="23" fill="#14161a" text-anchor="middle" font-weight="700" font-family="Inter, 'Liberation Sans', sans-serif" >.64</text>
+<text x="611.2" y="452.0" font-size="27" fill="#4a4c52" text-anchor="middle" font-weight="600" font-family="Inter, 'Liberation Sans', sans-serif" >SnapKV</text>
+<text x="611.2" y="486.0" font-size="24" fill="#7b7d84" text-anchor="middle" font-weight="400" font-family="Inter, 'Liberation Sans', sans-serif" >(ctx)</text>
+<path d="M734.8,410.0 L734.8,242.2 Q734.8,234.2 742.8,234.2 L766.8,234.2 Q774.8,234.2 774.8,242.2 L774.8,410.0 Z" fill="#8f8e88"/>
+<text x="754.8" y="222.2" font-size="23" fill="#4a4c52" text-anchor="middle" font-weight="500" font-family="Inter, 'Liberation Sans', sans-serif" >.38</text>
+<path d="M780.8,410.0 L780.8,168.2 Q780.8,160.2 788.8,160.2 L812.8,160.2 Q820.8,160.2 820.8,168.2 L820.8,410.0 Z" fill="#eb6834"/>
+<text x="800.8" y="148.2" font-size="23" fill="#4a4c52" text-anchor="middle" font-weight="500" font-family="Inter, 'Liberation Sans', sans-serif" >.54</text>
+<path d="M826.8,410.0 L826.8,228.4 Q826.8,220.4 834.8,220.4 L858.8,220.4 Q866.8,220.4 866.8,228.4 L866.8,410.0 Z" fill="#86b6ef"/>
+<text x="846.8" y="208.4" font-size="23" fill="#4a4c52" text-anchor="middle" font-weight="500" font-family="Inter, 'Liberation Sans', sans-serif" >.41</text>
+<path d="M872.8,410.0 L872.8,182.1 Q872.8,174.1 880.8,174.1 L904.8,174.1 Q912.8,174.1 912.8,182.1 L912.8,410.0 Z" fill="#2a78d6"/>
+<text x="892.8" y="162.1" font-size="23" fill="#14161a" text-anchor="middle" font-weight="700" font-family="Inter, 'Liberation Sans', sans-serif" >.51</text>
+<text x="823.8" y="452.0" font-size="27" fill="#4a4c52" text-anchor="middle" font-weight="600" font-family="Inter, 'Liberation Sans', sans-serif" >SnapKV</text>
+<text x="823.8" y="486.0" font-size="24" fill="#7b7d84" text-anchor="middle" font-weight="400" font-family="Inter, 'Liberation Sans', sans-serif" >(native)</text>
+<line x1="80" x2="930" y1="410.0" y2="410.0" stroke="#7b7d84" stroke-width="2"/>
+</svg></div>
+      <div class="legend">
+        <span><i style="background:#8f8e88"></i>Base on fragment</span>
+        <span><i style="background:#eb6834"></i>Abstention prompt (P2)</span>
+        <span><i style="background:#86b6ef"></i>v1 (KVzip-trained)</span>
+        <span><i style="background:#2a78d6"></i>Mixture-trained</span>
+      </div>
+      <div class="cap">Honest accuracy at r = 0.50 on four compressors. Mixture = trained on KVzip, Expected Attention and SnapKV masks.</div>
+      <h3>Prompting refuses too much</h3>
+      <p>On answerable questions at r = 0.80, the abstention prompt refuses <b>49&ndash;51%</b>; the mixture adapter refuses <b>6&ndash;10%</b>. Pooled over compressors, the adapter wins <b>+32 pp</b> there (McNemar 95 vs 13, p = 1.5&times;10<sup>&minus;16</sup>).</p>
+      <h3>Training on several compressors closes the SnapKV gap</h3>
+      <div class="figure" style="margin-top:12px"><svg viewBox="0 0 940 320" width="940" height="320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Gain over base model, v1 versus mixture">
+<line x1="250.0" x2="250.0" y1="20" y2="230" stroke="#e4e4e0" stroke-width="2"/>
+<text x="250.0" y="268.0" font-size="25" fill="#7b7d84" text-anchor="middle" font-weight="400" font-family="Inter, 'Liberation Sans', sans-serif" >0</text>
+<line x1="456.7" x2="456.7" y1="20" y2="230" stroke="#e4e4e0" stroke-width="2"/>
+<text x="456.7" y="268.0" font-size="25" fill="#7b7d84" text-anchor="middle" font-weight="400" font-family="Inter, 'Liberation Sans', sans-serif" >+0.2</text>
+<line x1="663.3" x2="663.3" y1="20" y2="230" stroke="#e4e4e0" stroke-width="2"/>
+<text x="663.3" y="268.0" font-size="25" fill="#7b7d84" text-anchor="middle" font-weight="400" font-family="Inter, 'Liberation Sans', sans-serif" >+0.4</text>
+<line x1="870.0" x2="870.0" y1="20" y2="230" stroke="#e4e4e0" stroke-width="2"/>
+<text x="870.0" y="268.0" font-size="25" fill="#7b7d84" text-anchor="middle" font-weight="400" font-family="Inter, 'Liberation Sans', sans-serif" >+0.6</text>
+<text x="560.0" y="312.0" font-size="24" fill="#7b7d84" text-anchor="middle" font-weight="400" font-family="Inter, 'Liberation Sans', sans-serif" >gain in honest accuracy over base (all ratios)</text>
+<text x="226.0" y="55.2" font-size="26" fill="#4a4c52" text-anchor="end" font-weight="600" font-family="Inter, 'Liberation Sans', sans-serif" >KVzip</text>
+<line x1="797.7" x2="818.3" y1="46.2" y2="46.2" stroke="#e4e4e0" stroke-width="10" stroke-linecap="round"/>
+<circle cx="797.7" cy="46.2" r="13" fill="#86b6ef" stroke="#ffffff" stroke-width="4"/>
+<circle cx="818.3" cy="46.2" r="13" fill="#2a78d6" stroke="#ffffff" stroke-width="4"/>
+<text x="775.7" y="55.2" font-size="24" fill="#14161a" text-anchor="end" font-weight="700" font-family="Inter, 'Liberation Sans', sans-serif" >+0.53 → +0.55</text>
+<text x="226.0" y="107.8" font-size="26" fill="#4a4c52" text-anchor="end" font-weight="600" font-family="Inter, 'Liberation Sans', sans-serif" >Exp. Attention</text>
+<line x1="756.3" x2="839.0" y1="98.8" y2="98.8" stroke="#e4e4e0" stroke-width="10" stroke-linecap="round"/>
+<circle cx="756.3" cy="98.8" r="13" fill="#86b6ef" stroke="#ffffff" stroke-width="4"/>
+<circle cx="839.0" cy="98.8" r="13" fill="#2a78d6" stroke="#ffffff" stroke-width="4"/>
+<text x="734.3" y="107.8" font-size="24" fill="#4a4c52" text-anchor="end" font-weight="500" font-family="Inter, 'Liberation Sans', sans-serif" >+0.49</text>
+<text x="861.0" y="107.8" font-size="24" fill="#14161a" text-anchor="start" font-weight="700" font-family="Inter, 'Liberation Sans', sans-serif" >+0.57</text>
+<text x="226.0" y="160.2" font-size="26" fill="#4a4c52" text-anchor="end" font-weight="600" font-family="Inter, 'Liberation Sans', sans-serif" >SnapKV (ctx)</text>
+<line x1="467.0" x2="797.7" y1="151.2" y2="151.2" stroke="#e4e4e0" stroke-width="10" stroke-linecap="round"/>
+<circle cx="467.0" cy="151.2" r="13" fill="#86b6ef" stroke="#ffffff" stroke-width="4"/>
+<circle cx="797.7" cy="151.2" r="13" fill="#2a78d6" stroke="#ffffff" stroke-width="4"/>
+<text x="445.0" y="160.2" font-size="24" fill="#4a4c52" text-anchor="end" font-weight="500" font-family="Inter, 'Liberation Sans', sans-serif" >+0.21</text>
+<text x="819.7" y="160.2" font-size="24" fill="#14161a" text-anchor="start" font-weight="700" font-family="Inter, 'Liberation Sans', sans-serif" >+0.53</text>
+<text x="226.0" y="212.8" font-size="26" fill="#4a4c52" text-anchor="end" font-weight="600" font-family="Inter, 'Liberation Sans', sans-serif" >SnapKV (native)</text>
+<line x1="456.7" x2="694.3" y1="203.8" y2="203.8" stroke="#e4e4e0" stroke-width="10" stroke-linecap="round"/>
+<circle cx="456.7" cy="203.8" r="13" fill="#86b6ef" stroke="#ffffff" stroke-width="4"/>
+<circle cx="694.3" cy="203.8" r="13" fill="#2a78d6" stroke="#ffffff" stroke-width="4"/>
+<text x="434.7" y="212.8" font-size="24" fill="#4a4c52" text-anchor="end" font-weight="500" font-family="Inter, 'Liberation Sans', sans-serif" >+0.20</text>
+<text x="716.3" y="212.8" font-size="24" fill="#14161a" text-anchor="start" font-weight="700" font-family="Inter, 'Liberation Sans', sans-serif" >+0.43</text>
+</svg></div>
+      <div class="legend" style="margin-top:4px">
+        <span><i class="ln" style="background:#86b6ef;height:26px;width:26px;border-radius:50%"></i>v1 (KVzip only, seed 42)</span>
+        <span><i class="ln" style="background:#2a78d6;height:26px;width:26px;border-radius:50%"></i>Mixture (2-seed mean)</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= column 3 ================= -->
+  <div class="col">
+    <div class="card">
+      <h2><span class="n">5</span>Works when decoding from the compressed cache</h2>
+      <p>Sections 3&ndash;4 re-feed the kept tokens as text. Here the model decodes <b>directly from a KVzip-compressed cache</b>.</p>
+      <div class="figure"><svg viewBox="0 0 940 520" width="940" height="520" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Compressed-cache honest accuracy by retention ratio">
+<line x1="96" x2="900" y1="410.0" y2="410.0" stroke="#e4e4e0" stroke-width="2"/>
+<text x="78.0" y="420.0" font-size="26" fill="#7b7d84" text-anchor="end" font-weight="400" font-family="Inter, 'Liberation Sans', sans-serif" >0</text>
+<line x1="96" x2="900" y1="315.0" y2="315.0" stroke="#e4e4e0" stroke-width="2"/>
+<text x="78.0" y="325.0" font-size="26" fill="#7b7d84" text-anchor="end" font-weight="400" font-family="Inter, 'Liberation Sans', sans-serif" >0.25</text>
+<line x1="96" x2="900" y1="220.0" y2="220.0" stroke="#e4e4e0" stroke-width="2"/>
+<text x="78.0" y="230.0" font-size="26" fill="#7b7d84" text-anchor="end" font-weight="400" font-family="Inter, 'Liberation Sans', sans-serif" >0.5</text>
+<line x1="96" x2="900" y1="125.0" y2="125.0" stroke="#e4e4e0" stroke-width="2"/>
+<text x="78.0" y="135.0" font-size="26" fill="#7b7d84" text-anchor="end" font-weight="400" font-family="Inter, 'Liberation Sans', sans-serif" >0.75</text>
+<line x1="96" x2="900" y1="30.0" y2="30.0" stroke="#e4e4e0" stroke-width="2"/>
+<text x="78.0" y="40.0" font-size="26" fill="#7b7d84" text-anchor="end" font-weight="400" font-family="Inter, 'Liberation Sans', sans-serif" >1</text>
+<text x="96.0" y="454.0" font-size="28" fill="#4a4c52" text-anchor="middle" font-weight="400" font-family="Inter, 'Liberation Sans', sans-serif" >0.05</text>
+<text x="256.8" y="454.0" font-size="28" fill="#4a4c52" text-anchor="middle" font-weight="400" font-family="Inter, 'Liberation Sans', sans-serif" >0.10</text>
+<text x="417.6" y="454.0" font-size="28" fill="#4a4c52" text-anchor="middle" font-weight="400" font-family="Inter, 'Liberation Sans', sans-serif" >0.20</text>
+<text x="578.4" y="454.0" font-size="28" fill="#4a4c52" text-anchor="middle" font-weight="400" font-family="Inter, 'Liberation Sans', sans-serif" >0.30</text>
+<text x="739.2" y="454.0" font-size="28" fill="#4a4c52" text-anchor="middle" font-weight="400" font-family="Inter, 'Liberation Sans', sans-serif" >0.50</text>
+<text x="900.0" y="454.0" font-size="28" fill="#4a4c52" text-anchor="middle" font-weight="400" font-family="Inter, 'Liberation Sans', sans-serif" >0.80</text>
+<text x="498.0" y="504.0" font-size="26" fill="#4a4c52" text-anchor="middle" font-weight="400" font-family="Inter, 'Liberation Sans', sans-serif" >KV retention ratio r</text>
+<line x1="578.4" x2="578.4" y1="57.3" y2="184.0" stroke="#4a4c52" stroke-width="3" stroke-dasharray="2 8" stroke-linecap="round"/>
+<text x="427.6" y="125.0" font-size="25" fill="#14161a" text-anchor="end" font-weight="700" font-family="Inter, 'Liberation Sans', sans-serif" >cache training:</text>
+<text x="427.6" y="157.0" font-size="25" fill="#14161a" text-anchor="end" font-weight="700" font-family="Inter, 'Liberation Sans', sans-serif" >+0.32 at r = 0.30</text>
+<polyline points="96.0,383.4 256.8,357.9 417.6,312.7 578.4,275.5 739.2,267.5 900.0,389.1" fill="none" stroke="#8f8e88" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="96.0" cy="383.4" r="10" fill="#8f8e88" stroke="#ffffff" stroke-width="4"/>
+<circle cx="256.8" cy="357.9" r="10" fill="#8f8e88" stroke="#ffffff" stroke-width="4"/>
+<circle cx="417.6" cy="312.7" r="10" fill="#8f8e88" stroke="#ffffff" stroke-width="4"/>
+<circle cx="578.4" cy="275.5" r="10" fill="#8f8e88" stroke="#ffffff" stroke-width="4"/>
+<circle cx="739.2" cy="267.5" r="10" fill="#8f8e88" stroke="#ffffff" stroke-width="4"/>
+<circle cx="900.0" cy="389.1" r="10" fill="#8f8e88" stroke="#ffffff" stroke-width="4"/>
+<polyline points="96.0,197.2 256.8,221.9 417.6,252.3 578.4,287.3 739.2,307.0 900.0,321.5" fill="none" stroke="#86b6ef" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="96.0" cy="197.2" r="10" fill="#86b6ef" stroke="#ffffff" stroke-width="4"/>
+<circle cx="256.8" cy="221.9" r="10" fill="#86b6ef" stroke="#ffffff" stroke-width="4"/>
+<circle cx="417.6" cy="252.3" r="10" fill="#86b6ef" stroke="#ffffff" stroke-width="4"/>
+<circle cx="578.4" cy="287.3" r="10" fill="#86b6ef" stroke="#ffffff" stroke-width="4"/>
+<circle cx="739.2" cy="307.0" r="10" fill="#86b6ef" stroke="#ffffff" stroke-width="4"/>
+<circle cx="900.0" cy="321.5" r="10" fill="#86b6ef" stroke="#ffffff" stroke-width="4"/>
+<polyline points="96.0,30.0 256.8,46.0 417.6,95.0 578.4,182.0 739.2,275.5 900.0,290.3" fill="none" stroke="#2a78d6" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="96.0" cy="30.0" r="10" fill="#2a78d6" stroke="#ffffff" stroke-width="4"/>
+<circle cx="256.8" cy="46.0" r="10" fill="#2a78d6" stroke="#ffffff" stroke-width="4"/>
+<circle cx="417.6" cy="95.0" r="10" fill="#2a78d6" stroke="#ffffff" stroke-width="4"/>
+<circle cx="578.4" cy="182.0" r="10" fill="#2a78d6" stroke="#ffffff" stroke-width="4"/>
+<circle cx="739.2" cy="275.5" r="10" fill="#2a78d6" stroke="#ffffff" stroke-width="4"/>
+<circle cx="900.0" cy="290.3" r="10" fill="#2a78d6" stroke="#ffffff" stroke-width="4"/>
+<polyline points="96.0,30.0 256.8,34.2 417.6,44.1 578.4,59.3 739.2,220.0 900.0,290.3" fill="none" stroke="#104281" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="96.0" cy="30.0" r="10" fill="#104281" stroke="#ffffff" stroke-width="4"/>
+<circle cx="256.8" cy="34.2" r="10" fill="#104281" stroke="#ffffff" stroke-width="4"/>
+<circle cx="417.6" cy="44.1" r="10" fill="#104281" stroke="#ffffff" stroke-width="4"/>
+<circle cx="578.4" cy="59.3" r="10" fill="#104281" stroke="#ffffff" stroke-width="4"/>
+<circle cx="739.2" cy="220.0" r="10" fill="#104281" stroke="#ffffff" stroke-width="4"/>
+<circle cx="900.0" cy="290.3" r="10" fill="#104281" stroke="#ffffff" stroke-width="4"/>
+</svg></div>
+      <div class="lg-head"><span>Aggregate honest accuracy, all ratios</span></div>
+      <div class="lg-table"><div class="lg-row"><span class="lg-line" style="background:#8f8e88"></span><span class="lg-name">Base model</span><span class="lg-val">0.19</span></div>
+<div class="lg-row"><span class="lg-line" style="background:#86b6ef"></span><span class="lg-name">v1 (prompt-style trained)</span><span class="lg-val">0.41</span></div>
+<div class="lg-row"><span class="lg-line" style="background:#2a78d6"></span><span class="lg-name">Mixture (prompt-style trained)</span><span class="lg-val">0.73</span></div>
+<div class="lg-row"><span class="lg-line" style="background:#104281"></span><span class="lg-name">Mixture (cache-trained)</span><span class="lg-val">0.82</span></div></div>
+      <p style="margin-top:18px">Correct answers on answerable questions: <b>24/97 vs. 4/97</b> for base (6&times;); <b>22/69 vs. 1/69</b> at r = 0.80 (22&times;).</p>
+    </div>
+
+    <div class="card">
+      <h2><span class="n">6</span>Does it read the evidence?</h2>
+      <div class="figure"><svg viewBox="0 0 940 290" width="940" height="290" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Same-length opposite masks">
+<text x="296.0" y="40.0" font-size="24" fill="#14161a" text-anchor="end" font-weight="700" font-family="Inter, 'Liberation Sans', sans-serif" >Mask A: top 50%</text>
+<text x="296.0" y="70.0" font-size="23" fill="#7b7d84" text-anchor="end" font-weight="400" font-family="Inter, 'Liberation Sans', sans-serif" >evidence kept</text>
+<rect x="320.0" y="10" width="385.2" height="64" rx="6" fill="#2a78d6"/>
+<text x="512.6" y="51.0" font-size="25" fill="#ffffff" text-anchor="middle" font-weight="700" font-family="Inter, 'Liberation Sans', sans-serif" >14 correct</text>
+<rect x="708.2" y="10" width="135.6" height="64" rx="6" fill="#c9c8c1"/>
+<text x="776.0" y="51.0" font-size="25" fill="#14161a" text-anchor="middle" font-weight="700" font-family="Inter, 'Liberation Sans', sans-serif" >5</text>
+<rect x="846.8" y="10" width="83.2" height="64" rx="6" fill="#d93f3e"/>
+<text x="888.4" y="51.0" font-size="25" fill="#ffffff" text-anchor="middle" font-weight="700" font-family="Inter, 'Liberation Sans', sans-serif" >3</text>
+<text x="296.0" y="150.0" font-size="24" fill="#14161a" text-anchor="end" font-weight="700" font-family="Inter, 'Liberation Sans', sans-serif" >Mask B: bottom 50%</text>
+<text x="296.0" y="180.0" font-size="23" fill="#7b7d84" text-anchor="end" font-weight="400" font-family="Inter, 'Liberation Sans', sans-serif" >evidence evicted</text>
+<rect x="320.0" y="120" width="610.0" height="64" rx="6" fill="#c9c8c1"/>
+<text x="625.0" y="161.0" font-size="25" fill="#14161a" text-anchor="middle" font-weight="700" font-family="Inter, 'Liberation Sans', sans-serif" >22 refused</text>
+<rect x="320" y="206" width="26" height="26" rx="5" fill="#2a78d6"/>
+<text x="356.0" y="228.0" font-size="24" fill="#4a4c52" text-anchor="start" font-weight="400" font-family="Inter, 'Liberation Sans', sans-serif" >correct</text>
+<rect x="510" y="206" width="26" height="26" rx="5" fill="#c9c8c1"/>
+<text x="546.0" y="228.0" font-size="24" fill="#4a4c52" text-anchor="start" font-weight="400" font-family="Inter, 'Liberation Sans', sans-serif" >refused</text>
+<rect x="700" y="206" width="26" height="26" rx="5" fill="#d93f3e"/>
+<text x="736.0" y="228.0" font-size="24" fill="#4a4c52" text-anchor="start" font-weight="400" font-family="Inter, 'Liberation Sans', sans-serif" >wrong</text>
+<text x="0.0" y="282.0" font-size="23" fill="#7b7d84" text-anchor="start" font-weight="400" font-family="Inter, 'Liberation Sans', sans-serif" >Mixture adapter · 22 answerable questions at r = 0.50 · equal mask length</text>
+</svg></div>
+      <ul style="margin-top:18px">
+        <li><b>Delete only the evidence span</b> (same retention): refusals rise <b>16.5% &rarr; 56.7%</b>.</li>
+        <li>Length is also a cue: fixing it at 500 tokens cuts CONFIDENT accuracy 0.62 &rarr; 0.15.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2><span class="n">7</span>Generalizes beyond training</h2>
+      <div class="gen">
+        <div class="callout"><div class="big">&minus;38 pp</div><div class="small"><b>RULER needle retrieval at 16K</b> (trained &le; 4K, no retraining): hallucination 73% &rarr; 36%, correct answers unchanged</div></div>
+        <div class="callout"><div class="big">+0.64</div><div class="small"><b>Llama-3.1-8B</b> replication: honest accuracy gain, hallucinations 228 &rarr; 10</div></div>
+      </div>
+      <p style="margin-top:22px">Held-out test split: <b>+0.63</b> honest accuracy, hallucinations <b>59/85 &rarr; 1/85</b>.</p>
+    </div>
+
+    <div class="card grow limits">
+      <h2><span class="n">8</span>Limitations</h2>
+      <ul>
+        <li><b>Aggregate scores can be gamed:</b> labels are U-shaped in r, so a rule on r alone reaches 0.93. We report per-ratio and per-class slices.</li>
+        <li><b>Span survival is a proxy</b> for sufficiency: &kappa; = 0.61 vs. an LLM judge (80% agreement).</li>
+        <li>Under compressed-cache decoding, answering at high retention is still hard (0.32 at r = 0.80).</li>
+        <li>MuSiQue 2-hop only; compressed-cache tests use KVzipPress only.</li>
+      </ul>
+    </div>
+
+  </div>
+</main>
+
+<footer>
+  <div><b>References.</b> KVzip (Kim et al., 2025) &middot; SnapKV (Li et al., 2024) &middot; Expected Attention / kvpress (NVIDIA) &middot; MuSiQue (Trivedi et al., 2022) &middot; RULER (Hsieh et al., 2024) &middot; LoRA (Hu et al., 2022)</div>
+  <div style="text-align:right; white-space:nowrap">Adapters: huggingface.co/moalikhoda/compression-aware-abstention-adapters<br>Every number on this poster is recomputed by <b>scripts/verify_paper_claims.py</b></div>
+</footer>
+
+</div>
+</body>
+</html>

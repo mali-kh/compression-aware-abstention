@@ -1,0 +1,359 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Compression-Aware Abstention Poster</title>
+<style>
+  @page { size: 841mm 1189mm; margin: 0; }
+  :root {
+    --bg: #f6f6f3;
+    --card: #ffffff;
+    --ink: #14161a;
+    --ink2: #4a4c52;
+    --muted: #7b7d84;
+    --line: #e4e4e0;
+    --navy: #0d2a52;
+    --navy2: #123a70;
+    --accent: #2a78d6;
+    --accent-soft: #e8f1fc;
+    --evidence: #eda100;
+    --wrong: #d93f3e;
+    --good: #1b7f4b;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--bg); }
+  body {
+    font-family: Inter, "Liberation Sans", sans-serif;
+    color: var(--ink);
+    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+  }
+  .poster {
+    width: 841mm; height: 1189mm; overflow: hidden;
+    display: flex; flex-direction: column;
+    background: var(--bg);
+  }
+
+  /* ---------- header ---------- */
+  header {
+    background: var(--navy);
+    color: #fff;
+    padding: 66px 100px 60px;
+    display: grid;
+    grid-template-columns: 1fr 330px;
+    gap: 80px;
+    align-items: center;
+  }
+  .venue {
+    display: inline-block;
+    font-size: 34px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
+    color: #bcd6f7;
+    margin-bottom: 26px;
+  }
+  h1 {
+    font-family: "Inter Display", Inter, sans-serif;
+    font-size: 136px; line-height: 1.0; font-weight: 800; letter-spacing: -0.025em;
+  }
+  .subtitle {
+    font-size: 60px; line-height: 1.18; font-weight: 500; color: #dbe7f8;
+    margin-top: 26px; max-width: 2500px;
+  }
+  .authors { margin-top: 36px; font-size: 44px; font-weight: 600; }
+  .authors .aff { font-weight: 400; color: #bcd6f7; margin-left: 24px; }
+  .qr-box { background: #fff; border-radius: 28px; padding: 30px 30px 22px; text-align: center; }
+  .qr-box .qr { width: 270px; height: 270px; margin: 0 auto; }
+  .qr-box .qr-cap { color: var(--ink); font-size: 26px; font-weight: 600; margin-top: 16px; line-height: 1.25; }
+  .qr-box .qr-cap span { display: block; color: var(--muted); font-weight: 500; font-size: 22px; }
+
+  /* ---------- TL;DR band ---------- */
+  .tldr {
+    background: #fff;
+    border-bottom: 2px solid var(--line);
+    padding: 50px 100px 54px;
+    display: grid; grid-template-columns: 1.3fr 1.7fr; gap: 80px; align-items: center;
+  }
+  .tldr p { font-size: 43px; line-height: 1.32; color: var(--ink); }
+  .tldr p b { font-weight: 700; }
+  .tldr .hl { background: linear-gradient(transparent 58%, #fbe3a8 58%); }
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 36px; }
+  .stat {
+    border-left: 8px solid var(--accent);
+    padding: 8px 0 8px 32px;
+  }
+  .stat .v, .lg-val, .callout .big {
+    font-feature-settings: "tnum" 1;
+  }
+  .stat .v {
+    font-size: 92px; font-weight: 700; letter-spacing: -0.03em; line-height: 1; color: var(--navy);
+  }
+  .stat .v small { font-size: 64px; font-weight: 700; }
+  .stat .k { font-size: 31px; line-height: 1.3; color: var(--ink2); margin-top: 20px; }
+  .stat .k b { color: var(--ink); }
+
+  /* ---------- body columns ---------- */
+  main {
+    flex: 1;
+    padding: 50px 100px 0;
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 56px;
+    min-height: 0;
+  }
+  .col { display: flex; flex-direction: column; gap: 40px; min-height: 0; }
+  .card {
+    background: var(--card);
+    border-radius: 28px;
+    padding: 42px 48px 44px;
+    box-shadow: 0 0 0 2px var(--line);
+  }
+  .card.grow { flex: 1; }
+  h2 {
+    font-size: 54px; font-weight: 700; letter-spacing: -0.015em; line-height: 1.12;
+    display: flex; align-items: baseline; gap: 22px;
+    margin-bottom: 20px;
+  }
+  h2 .n {
+    flex: none;
+    width: 66px; height: 66px; border-radius: 50%;
+    background: var(--navy); color: #fff;
+    font-size: 36px; font-weight: 700;
+    display: inline-flex; align-items: center; justify-content: center;
+    transform: translateY(-6px);
+  }
+  h3 { font-size: 37px; font-weight: 700; margin: 28px 0 10px; }
+  p, li { font-size: 34px; line-height: 1.42; color: var(--ink2); }
+  p b, li b { color: var(--ink); font-weight: 650; }
+  p + p { margin-top: 18px; }
+  ul { padding-left: 0; list-style: none; }
+  li { position: relative; padding-left: 40px; }
+  li + li { margin-top: 14px; }
+  li::before {
+    content: ""; position: absolute; left: 4px; top: 0.62em;
+    width: 14px; height: 14px; border-radius: 50%; background: var(--accent);
+  }
+  .figure { margin-top: 22px; }
+  .figure svg { width: 100%; height: auto; display: block; }
+  .cap { font-size: 27px; line-height: 1.38; color: var(--muted); margin-top: 18px; }
+  .cap b { color: var(--ink2); }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 14px 38px; margin-top: 18px; }
+  .legend span { display: inline-flex; align-items: center; gap: 14px; font-size: 28px; color: var(--ink2); }
+  .legend i { display: inline-block; width: 30px; height: 30px; border-radius: 6px; }
+  .legend i.ln { height: 8px; border-radius: 4px; width: 46px; }
+
+  .lg-table { margin-top: 10px; }
+  .lg-row { display: grid; grid-template-columns: 52px 1fr auto; align-items: center; gap: 18px; padding: 8px 0; border-bottom: 2px solid #f0f0ed; }
+  .lg-row:last-child { border-bottom: 0; }
+  .lg-line { height: 8px; border-radius: 4px; display: block; }
+  .lg-name { font-size: 29px; color: var(--ink2); }
+  .lg-val { font-size: 30px; font-weight: 700; color: var(--ink); }
+  .lg-head { display: flex; justify-content: space-between; font-size: 24px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 22px; }
+
+  /* example card */
+  .example { margin-top: 26px; border-radius: 22px; background: #f7f7f4; padding: 32px 36px; }
+  .example .q { font-size: 33px; line-height: 1.35; color: var(--ink); font-weight: 600; }
+  .example .meta { font-size: 26px; color: var(--muted); margin-top: 10px; }
+  .resp { display: grid; grid-template-columns: 58px 1fr; gap: 20px; margin-top: 26px; align-items: start; }
+  .resp .ic {
+    width: 58px; height: 58px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 34px; font-weight: 800; color: #fff;
+  }
+  .resp .who { font-size: 25px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+  .resp .say { font-size: 31px; line-height: 1.36; color: var(--ink); margin-top: 6px; font-style: italic; }
+  .resp.bad .ic { background: var(--wrong); }
+  .resp.bad .who { color: var(--wrong); }
+  .resp.ok .ic { background: var(--accent); }
+  .resp.ok .who { color: var(--accent); }
+
+  /* steps */
+  .steps { counter-reset: s; margin-top: 30px; }
+  .step { display: grid; grid-template-columns: 62px 1fr; gap: 22px; }
+  .step + .step { margin-top: 26px; }
+  .step .sn {
+    width: 54px; height: 54px; border-radius: 14px; background: var(--accent-soft); color: var(--navy2);
+    font-size: 30px; font-weight: 800; display: flex; align-items: center; justify-content: center;
+  }
+  .step p { font-size: 32px; }
+  .metric {
+    margin-top: 32px; padding: 26px 32px; border-radius: 18px;
+    background: var(--accent-soft); color: var(--navy);
+    font-size: 31px; line-height: 1.4;
+  }
+  .metric b { color: var(--navy); }
+
+  .callouts { display: grid; grid-template-columns: 1fr 1fr; gap: 26px; margin-top: 30px; }
+  .callout { background: #f7f7f4; border-radius: 20px; padding: 26px 30px; }
+  .callout .big { font-size: 60px; font-weight: 750; color: var(--navy); letter-spacing: -0.02em; line-height: 1.05; }
+  .callout .small { font-size: 27px; color: var(--ink2); line-height: 1.35; margin-top: 10px; }
+
+  .gen { display: grid; grid-template-columns: 1fr 1fr; gap: 26px; margin-top: 26px; }
+
+  .take {
+    background: var(--navy); color: #fff;
+    border-radius: 28px; padding: 50px 52px;
+    box-shadow: none;
+  }
+  .take h2 { color: #fff; }
+  .take h2 .n { background: #fff; color: var(--navy); }
+  .take p { color: #dbe7f8; font-size: 40px; line-height: 1.38; }
+  .take p b { color: #fff; }
+
+  .limits li { font-size: 30px; }
+  .limits li::before { background: var(--muted); }
+
+  footer {
+    padding: 34px 100px 46px;
+    display: flex; justify-content: space-between; align-items: flex-end; gap: 60px;
+    font-size: 23px; color: var(--muted); line-height: 1.4;
+  }
+  footer b { color: var(--ink2); }
+</style>
+</head>
+<body>
+<div class="poster">
+
+<header>
+  <div>
+    <div class="venue">GroundLM Workshop &middot; EMNLP 2026</div>
+    <h1>Compression-Aware Abstention</h1>
+    <div class="subtitle">Teaching LLMs to refuse when KV-compression masks remove answer evidence</div>
+    <div class="authors">Mohammadali Khodabandehlou &nbsp;&middot;&nbsp; Bhaskar Krishnamachari<span class="aff">University of Southern California</span></div>
+  </div>
+  <div class="qr-box">
+    <div class="qr">{{QR}}</div>
+    <div class="qr-cap">Code, data &amp; adapters<span>github.com/mali-kh/<br>compression-aware-abstention</span></div>
+  </div>
+</header>
+
+<section class="tldr">
+  <p>KV-cache compression can silently evict the evidence a question depends on. The model then <b>answers anyway &mdash; fluently and wrongly.</b> We train a <span class="hl"><b>10M-parameter LoRA adapter</b> that answers when the evidence survives compression and refuses when it does not.</span></p>
+  <div class="stats">
+    <div class="stat"><div class="v">97%</div><div class="k"><b>fewer hallucinations</b><br>232 &rarr; 7 on KVzip-compressed MuSiQue</div></div>
+    <div class="stat"><div class="v">.32<small>&rarr;</small>.86</div><div class="k"><b>honest accuracy</b><br>base &rarr; ours, mean of 3 seeds</div></div>
+    <div class="stat"><div class="v">6&ndash;22<small>&times;</small></div><div class="k"><b>more correct answers</b> under real compressed-cache decoding</div></div>
+    <div class="stat"><div class="v">96%</div><div class="k"><b>hallucination drop</b> replicates on Llama-3.1-8B (228 &rarr; 10)</div></div>
+  </div>
+</section>
+
+<main>
+  <!-- ================= column 1 ================= -->
+  <div class="col">
+    <div class="card">
+      <h2><span class="n">1</span>Compression removes evidence. Models don&rsquo;t notice.</h2>
+      <p>KV compressors (KVzip, SnapKV, Expected Attention) evict context tokens to save memory. When the evicted tokens carry the answer evidence, the remaining context is still <b>fluent and on-topic, but no longer determines the answer</b>, and the model fabricates one.</p>
+      <div class="example">
+        <div class="q">&ldquo;Who founded the company that distributed the film <i>UHF</i>?&rdquo;</div>
+        <div class="meta">Gold: Mike Medavoy &middot; KVzip at r = 0.30 evicted the supporting tokens</div>
+        <div class="resp bad">
+          <div class="ic">&#x2715;</div>
+          <div><div class="who">Base Qwen2.5-7B-Instruct &middot; hallucinates</div>
+          <div class="say">&ldquo;Kevin Smith founded the distribution company that released the film UHF.&rdquo;</div></div>
+        </div>
+        <div class="resp ok">
+          <div class="ic">&#x2713;</div>
+          <div><div class="who">+ our adapter &middot; abstains</div>
+          <div class="say">&ldquo;I cannot determine the answer to this question from the available context.&rdquo;</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2><span class="n">2</span>Label by evidence survival, then train</h2>
+      <div class="figure">{{METHOD_DIAGRAM}}</div>
+      <div class="steps">
+        <div class="step"><div class="sn">1</div><p><b>Tight-span localization.</b> MuSiQue 2-hop decompositions give each sub-answer as a short string; we locate it verbatim in its supporting paragraph (median <b>3 tokens</b>). Paragraph-level spans (~100 tokens) average out under compression and give zero label variance.</p></div>
+        <div class="step"><div class="sn">2</div><p><b>Label from the mask.</b> Run a compressor at retention r &isin; {0.05 &hellip; 0.80}. <b>CONFIDENT</b> if every span keeps &ge; 80% of its tokens, <b>ABSTAIN</b> if any span keeps &lt; 30%, otherwise dropped.</p></div>
+        <div class="step"><div class="sn">3</div><p><b>Train.</b> Rank-16 LoRA (10.1M params, attention only) on frozen Qwen2.5-7B-Instruct: emit the gold answer on CONFIDENT, a fixed refusal on ABSTAIN.</p></div>
+      </div>
+      <div class="metric"><b>Honest accuracy</b> = answer correctly when the evidence survived <b>+</b> refuse when it was evicted. Both directions count, so over-refusing is penalized as much as hallucinating.</div>
+    </div>
+
+    <div class="card take grow">
+      <h2><span class="n">&#x2192;</span>Takeaway</h2>
+      <p><b>Compressed models should know when they no longer know.</b> A small adapter, trained on labels read off the compressor&rsquo;s own survival mask, turns silent evidence loss into an explicit refusal.</p>
+    </div>
+  </div>
+
+  <!-- ================= column 2 ================= -->
+  <div class="col">
+    <div class="card">
+      <h2><span class="n">3</span>Hallucinations collapse</h2>
+      <p>Honest accuracy on KVzip-compressed contexts, by retention ratio. The adapter refuses almost perfectly when evidence is gone and still answers when it survives.</p>
+      <div class="figure">{{CHART_T1}}</div>
+      <div class="cap">MuSiQue 2-hop validation, n = 463 (97 CONFIDENT / 366 ABSTAIN). &ldquo;Answerable&rdquo; = share of CONFIDENT examples at each ratio. Ours = mean of seeds 42/43/44.</div>
+      <div class="callouts">
+        <div class="callout"><div class="big">232 &rarr; 7</div><div class="small">hallucinated answers, base vs. adapter (seed 42)</div></div>
+        <div class="callout"><div class="big">1.00&ndash;1.36&times;</div><div class="small">the base model&rsquo;s correct answers on answerable questions: safety without blanket refusal</div></div>
+      </div>
+    </div>
+
+    <div class="card grow">
+      <h2><span class="n">4</span>Beats prompting; mixture training transfers across compressors</h2>
+      <p>At <b>r = 0.50</b> about half the examples are answerable, so a rule based on r alone cannot help: the model has to use what survived.</p>
+      <div class="figure">{{CHART_T2}}</div>
+      <div class="legend">
+        <span><i style="background:{{C_BASE}}"></i>Base on fragment</span>
+        <span><i style="background:{{C_PROMPT}}"></i>Abstention prompt (P2)</span>
+        <span><i style="background:{{C_V1}}"></i>v1 (KVzip-trained)</span>
+        <span><i style="background:{{C_MIX}}"></i>Mixture-trained</span>
+      </div>
+      <div class="cap">Honest accuracy at r = 0.50 on four compressors. Mixture = trained on KVzip, Expected Attention and SnapKV masks.</div>
+      <h3>Prompting refuses too much</h3>
+      <p>On answerable questions at r = 0.80, the abstention prompt refuses <b>49&ndash;51%</b>; the mixture adapter refuses <b>6&ndash;10%</b>. Pooled over compressors, the adapter wins <b>+32 pp</b> there (McNemar 95 vs 13, p = 1.5&times;10<sup>&minus;16</sup>).</p>
+      <h3>Training on several compressors closes the SnapKV gap</h3>
+      <div class="figure" style="margin-top:12px">{{CHART_T3}}</div>
+      <div class="legend" style="margin-top:4px">
+        <span><i class="ln" style="background:{{C_V1}};height:26px;width:26px;border-radius:50%"></i>v1 (KVzip only, seed 42)</span>
+        <span><i class="ln" style="background:{{C_MIX}};height:26px;width:26px;border-radius:50%"></i>Mixture (2-seed mean)</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= column 3 ================= -->
+  <div class="col">
+    <div class="card">
+      <h2><span class="n">5</span>Works when decoding from the compressed cache</h2>
+      <p>Sections 3&ndash;4 re-feed the kept tokens as text. Here the model decodes <b>directly from a KVzip-compressed cache</b>.</p>
+      <div class="figure">{{CHART_T4}}</div>
+      <div class="lg-head"><span>Aggregate honest accuracy, all ratios</span></div>
+      <div class="lg-table">{{LEGEND_T4}}</div>
+      <p style="margin-top:18px">Correct answers on answerable questions: <b>24/97 vs. 4/97</b> for base (6&times;); <b>22/69 vs. 1/69</b> at r = 0.80 (22&times;).</p>
+    </div>
+
+    <div class="card">
+      <h2><span class="n">6</span>Does it read the evidence?</h2>
+      <div class="figure">{{CHART_MASKS}}</div>
+      <ul style="margin-top:18px">
+        <li><b>Delete only the evidence span</b> (same retention): refusals rise <b>16.5% &rarr; 56.7%</b>.</li>
+        <li>Length is also a cue: fixing it at 500 tokens cuts CONFIDENT accuracy 0.62 &rarr; 0.15.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2><span class="n">7</span>Generalizes beyond training</h2>
+      <div class="gen">
+        <div class="callout"><div class="big">&minus;38 pp</div><div class="small"><b>RULER needle retrieval at 16K</b> (trained &le; 4K, no retraining): hallucination 73% &rarr; 36%, correct answers unchanged</div></div>
+        <div class="callout"><div class="big">+0.64</div><div class="small"><b>Llama-3.1-8B</b> replication: honest accuracy gain, hallucinations 228 &rarr; 10</div></div>
+      </div>
+      <p style="margin-top:22px">Held-out test split: <b>+0.63</b> honest accuracy, hallucinations <b>59/85 &rarr; 1/85</b>.</p>
+    </div>
+
+    <div class="card grow limits">
+      <h2><span class="n">8</span>Limitations</h2>
+      <ul>
+        <li><b>Aggregate scores can be gamed:</b> labels are U-shaped in r, so a rule on r alone reaches 0.93. We report per-ratio and per-class slices.</li>
+        <li><b>Span survival is a proxy</b> for sufficiency: &kappa; = 0.61 vs. an LLM judge (80% agreement).</li>
+        <li>Under compressed-cache decoding, answering at high retention is still hard (0.32 at r = 0.80).</li>
+        <li>MuSiQue 2-hop only; compressed-cache tests use KVzipPress only.</li>
+      </ul>
+    </div>
+
+  </div>
+</main>
+
+<footer>
+  <div><b>References.</b> KVzip (Kim et al., 2025) &middot; SnapKV (Li et al., 2024) &middot; Expected Attention / kvpress (NVIDIA) &middot; MuSiQue (Trivedi et al., 2022) &middot; RULER (Hsieh et al., 2024) &middot; LoRA (Hu et al., 2022)</div>
+  <div style="text-align:right; white-space:nowrap">Adapters: huggingface.co/moalikhoda/compression-aware-abstention-adapters<br>Every number on this poster is recomputed by <b>scripts/verify_paper_claims.py</b></div>
+</footer>
+
+</div>
+</body>
+</html>
